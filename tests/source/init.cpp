@@ -27,7 +27,7 @@ SCENARIO("pop", "[pop]")
   REQUIRE(st.pop()==1);
 }
 
-SCENARIO("=", "[=]")
+SCENARIO("prisvoenie", "[prisvoenie]")
 {
   stack<int> st;
   st.push(1);
