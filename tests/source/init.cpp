@@ -10,6 +10,9 @@ SCENARIO("push_pop_count", "[push_pop_count]")
   st.push(1);
   REQUIRE(st.count()==1);
   REQUIRE(st.pop()==1);
+  st.push(1);
+  REQUIRE(st.count()==2);
+  REQUIRE(st.pop()==1);
 }
 
 SCENARIO("prisvoenie", "[prisvoenie]")
