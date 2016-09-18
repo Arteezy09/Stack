@@ -13,6 +13,8 @@ public:
 	void push(T const &);
 	T pop();
 	~stack();
+	stack(const stack&);
+	stack& operator=(const stack&);
 private:
 	T * array_;
 	size_t array_size_;
@@ -69,4 +71,24 @@ T stack<T>::pop()
 	}
 }
 
+template<typename T>
+stack<T>& stack<T>::operator=(const stack& x)
+{
+	if (this != &x)
+	{
+		delete[] array_;
+		count_ = x.count_;
+		array_size_ = x.array_size_;
+		array_ = new T[array_size_];
+		copy(x.array_, x.array_ + count_, array_);
+	}
+	return *this;
+}
 
+
+template <typename T>
+stack<T>::stack(const stack& x) : array_size_(x.array_size_), count_(x.count_)
+{
+	array_ = new T[array_size_];
+	copy(x.array_, x.array_ + count_, array_);
+}
