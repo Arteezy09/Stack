@@ -4,7 +4,7 @@
 
 using namespace std;
 
-SCENARIO("push_pop_count", "[push_pop_count]")
+SCENARIO("push_pop_count1", "[push_pop_count1]")
 {
   stack<int> st;
   st.push(1);
@@ -14,7 +14,7 @@ SCENARIO("push_pop_count", "[push_pop_count]")
   REQUIRE(st.pop()==9);
 }
 
-SCENARIO("push_pop_count", "[push_pop_count]")
+SCENARIO("push_pop_count2", "[push_pop_count2]")
 {
   stack<int> st;
   st.push(1);
@@ -23,7 +23,7 @@ SCENARIO("push_pop_count", "[push_pop_count]")
   REQUIRE(st.pop()==2);
 }
 
-SCENARIO("push_pop_count", "[push_pop_count]")
+SCENARIO("push_pop_count3", "[push_pop_count3]")
 {
   stack<int> st;
   st.push(1);
