@@ -12,7 +12,6 @@ SCENARIO("push", "[push]")
   REQUIRE(st.pop()==1);
   st.push(2);
   REQUIRE(st.count()==2);
-  REQUIRE(st.pop()==2);
 }
 
 SCENARIO("count", "[count]")
