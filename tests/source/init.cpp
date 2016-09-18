@@ -9,8 +9,26 @@ SCENARIO("push_pop_count", "[push_pop_count]")
   stack<int> st;
   st.push(1);
   st.push(2);
+  st.push(9);
+  REQUIRE(st.count()==3);
+  REQUIRE(st.pop()==9);
+}
+
+SCENARIO("push_pop_count", "[push_pop_count]")
+{
+  stack<int> st;
+  st.push(1);
+  st.push(2);
   REQUIRE(st.count()==2);
   REQUIRE(st.pop()==2);
+}
+
+SCENARIO("push_pop_count", "[push_pop_count]")
+{
+  stack<int> st;
+  st.push(1);
+  REQUIRE(st.count()==1);
+  REQUIRE(st.pop()==1);
 }
 
 SCENARIO("prisvoenie", "[prisvoenie]")
