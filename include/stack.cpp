@@ -56,7 +56,7 @@ void stack<T>::push(T const & x)
 			delete[]p;
 			array_size_ *= 2;
 		}
-		array_[count_] = a;
+		array_[count_] = x;
 		count_++;
 	}
 }
