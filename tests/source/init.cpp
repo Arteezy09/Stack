@@ -4,19 +4,22 @@
 
 using namespace std;
 
-SCENARIO("count", "[count]")
-{
-  stack<int> st;
-  st.push(1);
-  REQUIRE(st.count()==1);
-}
-
 SCENARIO("push", "[push]")
 {
   stack<int> st;
   st.push(1);
   REQUIRE(st.count()==1);
   REQUIRE(st.pop()==1);
+  st.push(2);
+  REQUIRE(st.count()==2);
+  REQUIRE(st.pop()==2);
+}
+
+SCENARIO("count", "[count]")
+{
+  stack<int> st;
+  st.push(1);
+  REQUIRE(st.count()==1);
 }
 
 SCENARIO("pop", "[pop]")
@@ -27,7 +30,7 @@ SCENARIO("pop", "[pop]")
   REQUIRE(st.pop()==1);
 }
 
-SCENARIO("prisv", "[prisv]")
+SCENARIO("=", "[=]")
 {
   stack<int> st;
   st.push(1);
