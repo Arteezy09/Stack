@@ -1,28 +1,34 @@
 #pragma once
 
 #include <iostream>
-
 using namespace std;
 
 template <typename T>
 class stack
 {
 public:
-	stack();
-	size_t count() const;
-	void push(T const &);
-	T pop();
-	~stack();
-	stack(const stack&);
-	stack& operator=(const stack&);
+	stack();                            /* noexcept */
+	stack(const stack &);               /* strong */
+	~stack();                           /* noexcept */
+
+	size_t count() const;               /* noexcept */
+	bool empty() const;                 /* noexcept */
+
+	stack & operator=(const stack &);   /* strong */
+	void push(T const &);               /* strong */
+	T & top() const;                    /* strong */
+	void pop();                         /* strong */
+
 private:
 	T * array_;
 	size_t array_size_;
 	size_t count_;
 };
 
+
 template <typename T>
-stack<T>::stack() : array_(nullptr), array_size_(0), count_(0){};
+stack<T>::stack() : array_(nullptr), array_size_(0), count_(0){}
+
 
 template <typename T>
 stack<T>::~stack()
@@ -30,65 +36,93 @@ stack<T>::~stack()
 	delete[] array_;
 }
 
+
+template<typename T>
+bool stack<T>::empty() const
+{ 
+	return(count_ == 0); 
+}
+
+
 template <typename T>
-size_t stack<T>::count() const
+size_t stack<T>::count() const 
 { 
 	return count_; 
 }
 
-template <typename T>
-void stack<T>::push(T const & x)
+
+template<typename T>         /* strong */
+T* new_copy(const T * rhs, const size_t count__, const size_t array_size__)
 {
-	if (array_ == nullptr)
-	{
-		array_ = new T[1];
-		array_[0] = x;
-		count_++;
-		array_size_++;
-	}
-	else
-	{
-		if (count_ == array_size_)
-		{
-			T *p = array_;
-			array_ = new T[array_size_ * 2];
-			copy(p, p + count_, array_);
-			delete[]p;
-			array_size_ *= 2;
-		}
-		array_[count_] = x;
-		count_++;
-	}
+	T* ptr = new T[array_size__];
+	copy(rhs, rhs + count__, ptr);
+	return ptr;
 }
 
+
 template <typename T>
-T stack<T>::pop()
+stack<T>::stack(const stack & rhs) : array_size_(rhs.array_size_), count_(rhs.count_), 
+array_(new_copy(rhs.array_, rhs.count_, rhs.array_size_)) {}
+
+
+template <typename T>
+void stack<T>::push(T const & value)
 {
-	if (count_> 0) 
+	if (array_size_ == count_)
 	{
-		count_--;
-		return array_[count_];
+		int size = array_size_ * 2 + (array_size_ == 0);
+		T * ptr = new_copy(array_, count_, size);
+		delete[] array_;
+		array_ = ptr;
+		array_size_ = size;
 	}
+	array_[count_] = value;
+	++count_;
 }
+
+
+template <typename T>
+T & stack<T>::top() const
+{
+	if (count_ == 0)
+	{
+		throw "empty stack";
+	}
+	return array_[count_ - 1];
+}
+
+
+template <typename T>
+void stack<T>::pop()
+{
+	if (count_ == 0)
+	{
+		throw "empty stack";
+	}
+	--count_;
+}
+
 
 template<typename T>
-stack<T>& stack<T>::operator=(const stack& x)
+stack<T> & stack<T>::operator=(const stack & rhs)
 {
-	if (this != &x)
+	if (this != & rhs)
 	{
+		T *ptr = new_copy(rhs.array_, rhs.count_, rhs.array_size_);
 		delete[] array_;
-		count_ = x.count_;
-		array_size_ = x.array_size_;
-		array_ = new T[array_size_];
-		copy(x.array_, x.array_ + count_, array_);
+		count_ = rhs.count_;
+		array_size_ = rhs.array_size_;
+		array_ = ptr;
 	}
 	return *this;
 }
 
-
-template <typename T>
-stack<T>::stack(const stack& x) : array_size_(x.array_size_), count_(x.count_)
+/*
+int main()
 {
-	array_ = new T[array_size_];
-	copy(x.array_, x.array_ + count_, array_);
+stack st;
+system("pause");
+return 0;
 }
+*/
+
