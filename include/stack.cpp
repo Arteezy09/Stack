@@ -15,6 +15,7 @@ public:
 
 	stack & operator=(const stack &);   /* strong */
 	void push(T const &);               /* strong */
+	T & top() const;                    /* strong */
 	void pop();                         /* strong */
 
 private:
@@ -73,6 +74,17 @@ void stack<T>::push(T const & value)
 
 
 template <typename T>
+T & stack<T>::top() const
+{
+	if (count_ == 0)
+	{
+		throw "empty stack";
+	}
+	return array_[count_ - 1];
+}
+
+
+template <typename T>
 void stack<T>::pop()
 {
 	if (count_ == 0)
@@ -105,4 +117,3 @@ system("pause");
 return 0;
 }
 */
-
