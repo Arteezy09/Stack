@@ -99,7 +99,7 @@ void stack<T>::pop()
 	{
 		throw "empty stack";
 	}
-	--count_;
+	array_[--count_];
 }
 
 
