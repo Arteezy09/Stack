@@ -17,7 +17,7 @@ public:
 	stack & operator=(const stack &);   /* strong */
 	void push(T const &);               /* strong */
 	T & top() const;                    /* strong */
-	void pop();                         /* strong */
+	auto pop()->T;                      /* strong */
 
 private:
 	T * array_;
@@ -31,29 +31,25 @@ stack<T>::stack() : array_(nullptr), array_size_(0), count_(0){}
 
 
 template <typename T>
-stack<T>::~stack()
-{
+stack<T>::~stack() {
 	delete[] array_;
 }
 
 
 template<typename T>
-bool stack<T>::empty() const
-{ 
+bool stack<T>::empty() const { 
 	return(count_ == 0); 
 }
 
 
 template <typename T>
-size_t stack<T>::count() const 
-{ 
+size_t stack<T>::count() const  { 
 	return count_; 
 }
 
 
 template<typename T>         /* strong */
-T* new_copy(const T * rhs, const size_t count__, const size_t array_size__)
-{
+T* new_copy(const T * rhs, const size_t count__, const size_t array_size__) {
 	T* ptr = new T[array_size__];
 	copy(rhs, rhs + count__, ptr);
 	return ptr;
@@ -66,10 +62,8 @@ array_(new_copy(rhs.array_, rhs.count_, rhs.array_size_)) {}
 
 
 template <typename T>
-void stack<T>::push(T const & value)
-{
-	if (array_size_ == count_)
-	{
+void stack<T>::push(T const & value) {
+	if (array_size_ == count_) {
 		int size = array_size_ * 2 + (array_size_ == 0);
 		T * ptr = new_copy(array_, count_, size);
 		delete[] array_;
@@ -82,10 +76,8 @@ void stack<T>::push(T const & value)
 
 
 template <typename T>
-T & stack<T>::top() const
-{
-	if (count_ == 0)
-	{
+T & stack<T>::top() const {
+	if (count_ == 0) {
 		throw "empty stack";
 	}
 	return array_[count_ - 1];
@@ -93,21 +85,17 @@ T & stack<T>::top() const
 
 
 template <typename T>
-void stack<T>::pop()
-{
-	if (count_ == 0)
-	{
+auto stack<T>::pop()->T {
+	if (count_ == 0) {
 		throw "empty stack";
 	}
-	array_[--count_];
+	--count_;
 }
 
 
 template<typename T>
-stack<T> & stack<T>::operator=(const stack & rhs)
-{
-	if (this != & rhs)
-	{
+stack<T> & stack<T>::operator=(const stack & rhs) {
+	if (this != & rhs) {
 		T *ptr = new_copy(rhs.array_, rhs.count_, rhs.array_size_);
 		delete[] array_;
 		count_ = rhs.count_;
@@ -120,7 +108,7 @@ stack<T> & stack<T>::operator=(const stack & rhs)
 /*
 int main()
 {
-stack st;
+stack<int> st;
 system("pause");
 return 0;
 }
