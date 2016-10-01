@@ -89,7 +89,7 @@ auto stack<T>::pop()->T {
 	if (count_ == 0) {
 		throw "empty stack";
 	}
-	--count_;
+	return --count_;
 }
 
 
