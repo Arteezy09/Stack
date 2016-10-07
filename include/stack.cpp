@@ -52,19 +52,22 @@ template<typename T>         /* strong */
 T* new_copy(const T * rhs, const size_t count__, const size_t array_size__) {
 	T* ptr = new T[array_size__];
 	try {
-	    std::copy(rhs, rhs + count__, ptr);
+		std::copy(rhs, rhs + count__, ptr);
 	}
 	catch(...) {
-	    delete[] ptr;
-	    throw;
+		delete[] ptr;
+		throw;
 	}
 	return ptr;
 }
 
 
 template <typename T>
-stack<T>::stack(const stack & rhs) : array_size_(rhs.array_size_), count_(rhs.count_), 
-array_(new_copy(rhs.array_, rhs.count_, rhs.array_size_)) {}
+stack<T>::stack(const stack & rhs) {
+	array_size_ = rhs.array_size_;
+        count_ = rhs.count_;
+        array_ = new_copy(rhs.array_, rhs.count_, rhs.array_size_);
+}
 
 
 template <typename T>
@@ -84,7 +87,7 @@ void stack<T>::push(T const & value) {
 template <typename T>
 T & stack<T>::top() const {
 	if (count_ == 0) {
-		throw "empty stack";
+		throw new InvalidOperationException("The stack is empty");
 	}
 	return array_[count_ - 1];
 }
@@ -93,9 +96,9 @@ T & stack<T>::top() const {
 template <typename T>
 auto stack<T>::pop()->T {
 	if (count_ == 0) {
-		throw "empty stack";
+		throw new InvalidOperationException("The stack is empty");
 	}
-	return --count_;
+	return array_[--count_];
 }
 
 
