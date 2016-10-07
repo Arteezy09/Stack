@@ -8,7 +8,7 @@ class stack
 public:
 	stack();                            /* noexcept */
 	stack(const stack &);               /* strong */
-t	~stack();                           /* noexcept */
+	~stack();                           /* noexcept */
 
 	size_t count() const;               /* noexcept */
 	bool empty() const;                 /* noexcept */
@@ -51,14 +51,12 @@ size_t stack<T>::count() const  {
 template<typename T>         /* strong */
 T* new_copy(const T * rhs, const size_t count__, const size_t array_size__) {
 	T* ptr = new T[array_size__];
-	try
-	{
-	std::copy(rhs, rhs + count__, ptr);
+	try {
+	    std::copy(rhs, rhs + count__, ptr);
 	}
-	catch(...)
-	{
-	delete[] ptr;
-	throw;
+	catch(...) {
+	    delete[] ptr;
+	    throw;
 	}
 	return ptr;
 }
