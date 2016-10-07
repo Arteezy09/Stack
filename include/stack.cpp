@@ -87,7 +87,7 @@ void stack<T>::push(T const & value) {
 template <typename T>
 T & stack<T>::top() const {
 	if (count_ == 0) {
-		throw new InvalidOperationException("The stack is empty");
+		throw std::logic_error("The stack is Empty");
 	}
 	return array_[count_ - 1];
 }
@@ -96,7 +96,7 @@ T & stack<T>::top() const {
 template <typename T>
 auto stack<T>::pop()->T {
 	if (count_ == 0) {
-		throw new InvalidOperationException("The stack is empty");
+		throw std::logic_error("The stack is Empty");
 	}
 	return array_[--count_];
 }
