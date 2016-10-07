@@ -1,5 +1,4 @@
 #pragma once
-
 #include <iostream>
 using namespace std;
 
@@ -9,7 +8,7 @@ class stack
 public:
 	stack();                            /* noexcept */
 	stack(const stack &);               /* strong */
-	~stack();                           /* noexcept */
+t	~stack();                           /* noexcept */
 
 	size_t count() const;               /* noexcept */
 	bool empty() const;                 /* noexcept */
@@ -19,6 +18,7 @@ public:
 	T & top() const;                    /* strong */
 	auto pop()->T;                      /* strong */
 
+	
 private:
 	T * array_;
 	size_t array_size_;
@@ -51,7 +51,15 @@ size_t stack<T>::count() const  {
 template<typename T>         /* strong */
 T* new_copy(const T * rhs, const size_t count__, const size_t array_size__) {
 	T* ptr = new T[array_size__];
-	copy(rhs, rhs + count__, ptr);
+	try
+	{
+	std::copy(rhs, rhs + count__, ptr);
+	}
+	catch(...)
+	{
+	delete[] ptr;
+	throw;
+	}
 	return ptr;
 }
 
