@@ -11,6 +11,7 @@ public:
 	~stack();                                  /* noexcept */
 
 	auto count() const noexcept->size_t;       /* noexcept */
+	auto empty() const->bool;                  /* noexcept */
 
 	auto operator=(const stack &)->stack &;    /* strong */
 	auto push(T const &)->void;                /* strong */
@@ -32,6 +33,12 @@ stack<T>::stack() : array_(nullptr), array_size_(0), count_(0){}
 template <typename T>
 stack<T>::~stack() {
 	delete[] array_;
+}
+
+
+template<typename T>
+auto stack<T>::empty() const->bool { 
+	return(count_ == 0); 
 }
 
 
