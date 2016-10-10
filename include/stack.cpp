@@ -6,17 +6,17 @@ template <typename T>
 class stack
 {
 public:
-	stack();                            /* noexcept */
-	stack(const stack &);               /* strong */
-	~stack();                           /* noexcept */
+	stack();                                   /* noexcept */
+	stack(const stack &);                      /* strong */
+	~stack();                                  /* noexcept */
 
-	size_t count() const;               /* noexcept */
-	bool empty() const;                 /* noexcept */
+	auto count() const noexcept->size_t;       /* noexcept */
+	auto empty() const->bool;                  /* noexcept */
 
-	stack & operator=(const stack &);   /* strong */
-	void push(T const &);               /* strong */
-	T & top() const;                    /* strong */
-	auto pop()->T;                      /* strong */
+	auto operator=(const stack &)->stack &;    /* strong */
+	auto push(T const &)->void;                /* strong */
+	auto top() const->T &;                     /* strong */
+	auto pop()->T;                             /* strong */
 
 	
 private:
@@ -37,13 +37,13 @@ stack<T>::~stack() {
 
 
 template<typename T>
-bool stack<T>::empty() const { 
+auto stack<T>::empty() const->bool { 
 	return(count_ == 0); 
 }
 
 
 template <typename T>
-size_t stack<T>::count() const  { 
+auto stack<T>::count() const noexcept->size_t { 
 	return count_; 
 }
 
@@ -71,7 +71,7 @@ stack<T>::stack(const stack & rhs) {
 
 
 template <typename T>
-void stack<T>::push(T const & value) {
+auto stack<T>::push(T const & value)->void {
 	if (array_size_ == count_) {
 		int size = array_size_ * 2 + (array_size_ == 0);
 		T * ptr = new_copy(array_, count_, size);
@@ -85,7 +85,7 @@ void stack<T>::push(T const & value) {
 
 
 template <typename T>
-T & stack<T>::top() const {
+auto stack<T>::top() const->T & {
 	if (count_ == 0) {
 		throw std::logic_error("The stack is Empty");
 	}
@@ -103,7 +103,7 @@ auto stack<T>::pop()->T {
 
 
 template<typename T>
-stack<T> & stack<T>::operator=(const stack & rhs) {
+auto stack<T>::operator=(const stack & rhs)->stack & {
 	if (this != & rhs) {
 		T *ptr = new_copy(rhs.array_, rhs.count_, rhs.array_size_);
 		delete[] array_;
