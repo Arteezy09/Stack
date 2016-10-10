@@ -6,17 +6,15 @@ template <typename T>
 class stack
 {
 public:
-	stack();                                   
-	stack(const stack &);                      
-	~stack();                                  
+	stack();                                   /* noexcept */
+	stack(const stack &);                      /* strong */
+	~stack();                                  /* noexcept */
 
-	auto count() const noexcept->size_t;       
-	                
+	auto count() const noexcept->size_t;       /* noexcept */
 
-	auto operator=(const stack &)->stack &;    
-	auto push(T const &)->void;              
-	                 
-	auto pop()->T;                            
+	auto operator=(const stack &)->stack &;    /* strong */
+	auto push(T const &)->void;                /* strong */
+	auto pop()->T;                             /* strong */
 
 	
 private:
@@ -42,7 +40,7 @@ auto stack<T>::count() const noexcept->size_t {
 }
 
 
-template<typename T>        
+template<typename T>         /* strong */
 auto new_copy(const T * rhs, size_t count__, size_t array_size__)->T* {
 	T* ptr = new T[array_size__];
 	try {
