@@ -14,6 +14,7 @@ public:
 
 	auto operator=(const stack &)->stack &;    /* strong */
 	auto push(T const &)->void;                /* strong */
+	auto top() const->T &;                     /* strong */
 	auto pop()->T;                             /* strong */
 
 	
@@ -73,6 +74,15 @@ auto stack<T>::push(T const & value)->void {
 	}
 	array_[count_] = value;
 	++count_;
+}
+
+
+template <typename T>
+auto stack<T>::top() const->T & {
+	if (count_ == 0) {
+		throw std::logic_error("The stack is Empty");
+	}
+	return array_[count_ - 1];
 }
 
 
