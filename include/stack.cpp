@@ -6,17 +6,17 @@ template <typename T>
 class stack
 {
 public:
-	stack();                                   /* noexcept */
-	stack(const stack &);                      /* strong */
-	~stack();                                  /* noexcept */
+	stack();                                   
+	stack(const stack &);                      
+	~stack();                                  
 
-	auto count() const noexcept->size_t;       /* noexcept */
-	auto empty() const->bool;                  /* noexcept */
+	auto count() const noexcept->size_t;       
+	                
 
-	auto operator=(const stack &)->stack &;    /* strong */
-	auto push(T const &)->void;                /* strong */
-	auto top() const->T &;                     /* strong */
-	auto pop()->T;                             /* strong */
+	auto operator=(const stack &)->stack &;    
+	auto push(T const &)->void;              
+	                 
+	auto pop()->T;                            
 
 	
 private:
@@ -36,19 +36,13 @@ stack<T>::~stack() {
 }
 
 
-template<typename T>
-auto stack<T>::empty() const->bool { 
-	return(count_ == 0); 
-}
-
-
 template <typename T>
 auto stack<T>::count() const noexcept->size_t { 
 	return count_; 
 }
 
 
-template<typename T>         /* strong */
+template<typename T>        
 auto new_copy(const T * rhs, size_t count__, size_t array_size__)->T* {
 	T* ptr = new T[array_size__];
 	try {
@@ -81,15 +75,6 @@ auto stack<T>::push(T const & value)->void {
 	}
 	array_[count_] = value;
 	++count_;
-}
-
-
-template <typename T>
-auto stack<T>::top() const->T & {
-	if (count_ == 0) {
-		throw std::logic_error("The stack is Empty");
-	}
-	return array_[count_ - 1];
 }
 
 
