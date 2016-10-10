@@ -49,7 +49,7 @@ auto stack<T>::count() const noexcept->size_t {
 
 
 template<typename T>         /* strong */
-T* new_copy(const T * rhs, const size_t count__, const size_t array_size__) {
+auto new_copy(const T * rhs, size_t count__, size_t array_size__)->T* {
 	T* ptr = new T[array_size__];
 	try {
 		std::copy(rhs, rhs + count__, ptr);
