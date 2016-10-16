@@ -2,8 +2,77 @@
 #include <iostream>
 using namespace std;
 
+
 template <typename T>
-class stack
+class allocator
+{
+protected:
+    allocator(size_t size = 0);
+    ~allocator();
+    auto swap(allocator & other) -> void;
+    auto construct(T*ptr,T const & val) -> void;
+    auto destroy(T *ptr) -> void;
+    auto destroy(T *first, T *last) -> void;
+    
+    allocator(allocator const &) = delete;
+    auto operator =(allocator const &) -> allocator & = delete;
+    
+    T * ptr_;
+    size_t size_;
+    size_t count_;
+};
+
+template <typename T>
+allocator<T>::allocator(size_t size):count_(0), size_(size)
+{
+	if (size==0)
+	{
+		ptr_=nullptr;
+	}
+	else
+	{
+		ptr_ = static_cast<T*>(operator new(size*sizeof(T)));
+	}
+	
+}
+
+template<typename T> /*noexcept*/
+allocator<T>::~allocator() {
+	destroy(ptr_, ptr_ + size_);
+	operator delete(ptr_);
+}
+
+template <typename T>
+void allocator<T>::construct(T *ptr,T const & val)
+{
+	new(ptr) T(val);
+}
+
+template <typename T>
+void allocator<T>::destroy(T *ptr)
+{
+	ptr->~T();
+}
+
+template <typename T>
+void allocator<T>::destroy(T *first,T *last)
+{
+	for (; first != last; first++)
+	{
+		destroy(first);
+	}
+}
+	
+template<typename T> /*noexcept*/
+auto allocator<T>::swap(allocator & other) -> void {
+	std::swap(ptr_, other.ptr_);
+	std::swap(count_, other.count_);
+	std::swap(size_, other.size_);
+}
+
+
+template <typename T>
+class stack : private allocator<T>
 {
 public:
 	stack();                                   /* noexcept */
@@ -27,24 +96,22 @@ private:
 
 
 template <typename T>
-stack<T>::stack() : array_(nullptr), array_size_(0), count_(0){}
+stack<T>::stack() : allocator<T>(){}
 
 
 template <typename T>
-stack<T>::~stack() {
-	delete[] array_;
-}
+stack<T>::~stack() {}
 
 
 template<typename T>
 auto stack<T>::empty() const->bool { 
-	return(count_ == 0); 
+	return(allocator<T>::count_ == 0); 
 }
 
 
 template <typename T>
 auto stack<T>::count() const noexcept->size_t { 
-	return count_; 
+	return allocator<T>::count_; 
 }
 
 
