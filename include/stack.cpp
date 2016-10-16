@@ -153,19 +153,19 @@ auto stack<T>::push(T const & value)->void {
 
 template <typename T>
 auto stack<T>::top() const->T & {
-	if (count_ == 0) {
+	if (allocator<T>::count_ == 0) {
 		throw std::logic_error("The stack is Empty");
 	}
-	return array_[count_ - 1];
+	return allocator<T>::array_[count_ - 1];
 }
 
 
 template <typename T>
 auto stack<T>::pop()->T {
-	if (count_ == 0) {
+	if (allocator<T>::count_ == 0) {
 		throw std::logic_error("The stack is Empty");
 	}
-	return array_[--count_];
+	return allocator<T>::array_[--count_];
 }
 
 
