@@ -34,11 +34,11 @@ allocator<T>::allocator(size_t size):count_(0), size_(size)
 	{
 		ptr_ = static_cast<T*>(operator new(size*sizeof(T)));
 	}
-	
 }
 
-template<typename T> /*noexcept*/
-allocator<T>::~allocator() {
+template<typename T> 
+allocator<T>::~allocator() 
+{
 	destroy(ptr_, ptr_ + size_);
 	operator delete(ptr_);
 }
@@ -65,7 +65,8 @@ void allocator<T>::destroy(T *first,T *last)
 }
 	
 template<typename T> /*noexcept*/
-auto allocator<T>::swap(allocator & other) -> void {
+auto allocator<T>::swap(allocator & other) -> void 
+{
 	std::swap(ptr_, other.ptr_);
 	std::swap(count_, other.count_);
 	std::swap(size_, other.size_);
