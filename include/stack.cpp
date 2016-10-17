@@ -86,17 +86,11 @@ public:
 	auto push(T const &)->void;                /* strong */
 	auto top() const->T &;                     /* strong */
 	auto pop()->T;                             /* strong */
-
-	
-private:
-	T * array_;
-	size_t array_size_;
-	size_t count_;
 };
 
 
 template <typename T>
-stack<T>::stack() : allocator<T>(){}
+stack<T>::stack() : allocator<T>() {}
 
 
 template <typename T>
@@ -130,55 +124,56 @@ auto new_copy(const T * rhs, size_t count__, size_t array_size__)->T* {
 
 
 template <typename T>
-stack<T>::stack(const stack & rhs) {
-	array_size_ = rhs.array_size_;
-        count_ = rhs.count_;
-        array_ = new_copy(rhs.array_, rhs.count_, rhs.array_size_);
+stack<T>::stack(const stack & rhs) : allocator<T>(rhs.size_) {
+	for (size_t i = 0; i < rhs.count_; i++) {
+		allocator<T>::construct(allocator<T>::ptr_ + i, rhs.ptr_[i]);
+	}
+	allocator<T>::count_ = rhs.count_;
 }
 
 
 template <typename T>
 auto stack<T>::push(T const & value)->void {
-	if (array_size_ == count_) {
-		int size = array_size_ * 2 + (array_size_ == 0);
-		T * ptr = new_copy(array_, count_, size);
-		delete[] array_;
-		array_ = ptr;
-		array_size_ = size;
+	if (allocator<T>::size_ == allocator<T>::count_) {
+		int size = allocator<T>::size_ * 2 + (allocator<T>::size_ == 0);
+		T * ptr = new_copy(allocator<T>::array_, allocator<T>::count_, size);
+		delete[] allocator<T>::array_;
+		allocator<T>::array_ = ptr;
+		allocator<T>::size_ = size;
 	}
-	array_[count_] = value;
-	++count_;
+	allocator<T>::array_[allocator<T>::count_] = value;
+	++allocator<T>::count_;
 }
 
 
 template <typename T>
-auto stack<T>::top() const->T & {
-	if (allocator<T>::count_ == 0) {
+auto stack<T>::top() const->T & 
+{
+	if (allocator<T>::count_ == 0) 
+	{
 		throw std::logic_error("The stack is Empty");
 	}
-	return allocator<T>::array_[count_ - 1];
+	return allocator<T>::array_[allocator<T>::count_ - 1];
 }
 
 
 template <typename T>
-auto stack<T>::pop()->T {
-	if (allocator<T>::count_ == 0) {
+auto stack<T>::pop()->T 
+{
+	if (allocator<T>::count_ == 0) 
+	{
 		throw std::logic_error("The stack is Empty");
 	}
-	return allocator<T>::array_[--count_];
+	return allocator<T>::array_[--allocator<T>::count_];
 }
 
 
 template<typename T>
 auto stack<T>::operator=(const stack & rhs)->stack & {
 	if (this != & rhs) {
-		T *ptr = new_copy(rhs.array_, rhs.count_, rhs.array_size_);
-		delete[] array_;
-		count_ = rhs.count_;
-		array_size_ = rhs.array_size_;
-		array_ = ptr;
+		(stack(rhs)).swap(*this);
 	}
-	return *this;
+	return *this;		
 }
 
 /*
