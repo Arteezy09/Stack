@@ -10,6 +10,7 @@ protected:
     allocator(size_t size = 0);
     ~allocator();
     auto swap(allocator & other) -> void;
+	
     auto construct(T*ptr,T const & val) -> void;
     auto destroy(T *ptr) -> void;
     auto destroy(T *first, T *last) -> void;
@@ -98,24 +99,29 @@ stack<T>::~stack() {}
 
 
 template<typename T>
-auto stack<T>::empty() const->bool { 
+auto stack<T>::empty() const->bool
+{ 
 	return(allocator<T>::count_ == 0); 
 }
 
 
 template <typename T>
-auto stack<T>::count() const noexcept->size_t { 
+auto stack<T>::count() const noexcept->size_t 
+{ 
 	return allocator<T>::count_; 
 }
 
 
 template<typename T>         /* strong */
-auto new_copy(const T * rhs, size_t count__, size_t array_size__)->T* {
+auto new_copy(const T * rhs, size_t count__, size_t array_size__)->T* 
+{
 	T* ptr = new T[array_size__];
-	try {
-		std::copy(rhs, rhs + count__, ptr);
+	try 
+	{ 
+	        std::copy(rhs, rhs + count__, ptr); 
 	}
-	catch(...) {
+	catch(...) 
+	{
 		delete[] ptr;
 		throw;
 	}
@@ -124,8 +130,10 @@ auto new_copy(const T * rhs, size_t count__, size_t array_size__)->T* {
 
 
 template <typename T>
-stack<T>::stack(const stack & rhs) : allocator<T>(rhs.size_) {
-	for (size_t i = 0; i < rhs.count_; i++) {
+stack<T>::stack(const stack & rhs) : allocator<T>(rhs.size_) 
+{
+	for (size_t i = 0; i < rhs.count_; i++)
+	{
 		allocator<T>::construct(allocator<T>::ptr_ + i, rhs.ptr_[i]);
 	}
 	allocator<T>::count_ = rhs.count_;
@@ -133,8 +141,10 @@ stack<T>::stack(const stack & rhs) : allocator<T>(rhs.size_) {
 
 
 template <typename T>
-auto stack<T>::push(T const & value)->void {
-	if (allocator<T>::size_ == allocator<T>::count_) {
+auto stack<T>::push(T const & value)->void
+{
+	if (allocator<T>::size_ == allocator<T>::count_)
+	{
 		int size = allocator<T>::size_ * 2 + (allocator<T>::size_ == 0);
 		T * ptr = new_copy(allocator<T>::array_, allocator<T>::count_, size);
 		delete[] allocator<T>::array_;
@@ -169,8 +179,10 @@ auto stack<T>::pop()->T
 
 
 template<typename T>
-auto stack<T>::operator=(const stack & rhs)->stack & {
-	if (this != & rhs) {
+auto stack<T>::operator=(const stack & rhs)->stack &
+{
+	if (this != & rhs) 
+	{
 		(stack(rhs)).swap(*this);
 	}
 	return *this;		
