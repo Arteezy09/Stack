@@ -2,6 +2,22 @@
 #include <iostream>
 using namespace std;
 
+template <typename T1, typename T2>
+void construct(T1 * ptr, T2 const & value) {
+	new(ptr) T1 (value);
+}
+
+template <typename T>
+void destroy(T * ptr) noexcept {
+	ptr->~T();
+}
+
+template <typename FwdIter>
+void destroy(FwdIter first, FwdIter last) noexcept {
+	for (; first != last; ++first) {
+		destroy(&*first);
+	}
+}
 
 template <typename T>
 class allocator
@@ -11,10 +27,6 @@ protected:
     ~allocator();
     auto swap(allocator & other) -> void;
 	
-    auto construct(T*ptr,T const & val) -> void;
-    auto destroy(T *ptr) -> void;
-    auto destroy(T *first, T *last) -> void;
-    
     allocator(allocator const &) = delete;
     auto operator =(allocator const &) -> allocator & = delete;
     
@@ -24,47 +36,21 @@ protected:
 };
 
 template <typename T>
-allocator<T>::allocator(size_t size):count_(0), size_(size)
-{
-	if (size==0)
-	{
-		ptr_=nullptr;
-	}
-	else
-	{
-		ptr_ = static_cast<T*>(operator new(size*sizeof(T)));
+allocator<T>::allocator(size_t size):count_(0), size_(size) {
+	if (size==0) { ptr_=nullptr; }
+	else 
+	{ 
+		ptr_ = static_cast<T*>(operator new(size*sizeof(T))); 
 	}
 }
 
 template<typename T> 
-allocator<T>::~allocator() 
-{
+allocator<T>::~allocator() {
 	destroy(ptr_, ptr_ + size_);
 	operator delete(ptr_);
 }
-
-template <typename T>
-void allocator<T>::construct(T *ptr,T const & val)
-{
-	new(ptr) T(val);
-}
-
-template <typename T>
-void allocator<T>::destroy(T *ptr)
-{
-	ptr->~T();
-}
-
-template <typename T>
-void allocator<T>::destroy(T *first,T *last)
-{
-	for (; first != last; first++)
-	{
-		destroy(first);
-	}
-}
 	
-template<typename T> /*noexcept*/
+template<typename T>                               /*noexcept*/
 auto allocator<T>::swap(allocator & other) -> void 
 {
 	std::swap(ptr_, other.ptr_);
@@ -100,20 +86,18 @@ stack<T>::~stack() {}
 
 
 template<typename T>
-auto stack<T>::empty() const->bool
-{ 
+auto stack<T>::empty() const->bool { 
 	return(allocator<T>::count_ == 0); 
 }
 
 
 template <typename T>
-auto stack<T>::count() const noexcept->size_t 
-{ 
+auto stack<T>::count() const noexcept->size_t { 
 	return allocator<T>::count_; 
 }
 
 
-template<typename T>         /* strong */
+template<typename T>                              /* strong */
 auto new_copy(const T * rhs, size_t count__, size_t array_size__)->T* 
 {
 	T* ptr = new T[array_size__];
@@ -135,7 +119,7 @@ stack<T>::stack(const stack & rhs) : allocator<T>(rhs.size_)
 {
 	for (size_t i = 0; i < rhs.count_; i++)
 	{
-		allocator<T>::construct(allocator<T>::ptr_ + i, rhs.ptr_[i]);
+		construct(allocator<T>::ptr_ + i, rhs.ptr_[i]);
 	}
 	allocator<T>::count_ = rhs.count_;
 }
@@ -146,13 +130,13 @@ auto stack<T>::push(T const & value)->void
 {
 	if (allocator<T>::size_ == allocator<T>::count_)
 	{
-		int size = allocator<T>::size_ * 2 + (allocator<T>::size_ == 0);
-		T * ptr = new_copy(allocator<T>::array_, allocator<T>::count_, size);
-		delete[] allocator<T>::array_;
-		allocator<T>::array_ = ptr;
+		size_t size = allocator<T>::size_ * 2 + (allocator<T>::size_ == 0);
+		T * ptr = new_copy(allocator<T>::ptr_, allocator<T>::count_, size);
+		delete[] allocator<T>::ptr_;
+		allocator<T>::ptr_ = ptr;
 		allocator<T>::size_ = size;
 	}
-	allocator<T>::array_[allocator<T>::count_] = value;
+	allocator<T>::ptr_[allocator<T>::count_] = value;
 	++allocator<T>::count_;
 }
 
@@ -164,7 +148,7 @@ auto stack<T>::top() const->T &
 	{
 		throw std::logic_error("The stack is Empty");
 	}
-	return allocator<T>::array_[allocator<T>::count_ - 1];
+	return allocator<T>::ptr_[allocator<T>::count_ - 1];
 }
 
 
@@ -175,7 +159,7 @@ auto stack<T>::pop()->T
 	{
 		throw std::logic_error("The stack is Empty");
 	}
-	return allocator<T>::array_[--allocator<T>::count_];
+	return allocator<T>::ptr_[--allocator<T>::count_];
 }
 
 
