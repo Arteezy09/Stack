@@ -46,7 +46,7 @@ allocator<T>::allocator(size_t size):count_(0), size_(size) {
 
 template<typename T> 
 allocator<T>::~allocator() {
-	destroy(ptr_, ptr_ + size_);
+	allocator<T>::destroy(this->ptr_, this->ptr_ + this->count_);
 	operator delete(ptr_);
 }
 	
@@ -63,7 +63,7 @@ template <typename T>
 class stack : private allocator<T>
 {
 public:
-	stack();                                   /* noexcept */
+	stack(size_t size=0);                      /* noexcept */
 	stack(const stack &);                      /* strong */
 	~stack();                                  /* noexcept */
 
@@ -78,11 +78,14 @@ public:
 
 
 template <typename T>
-stack<T>::stack() : allocator<T>() {}
+stack<T>::stack(size_t size) : allocator<T>(size) {}
 
 
 template <typename T>
-stack<T>::~stack() {}
+stack<T>::~stack() 
+{
+	allocator<T>::destroy(this->ptr_, this->ptr_ + this->count_);
+}
 
 
 template<typename T>
@@ -119,7 +122,7 @@ stack<T>::stack(const stack & rhs) : allocator<T>(rhs.size_)
 {
 	for (size_t i = 0; i < rhs.count_; i++)
 	{
-		construct(allocator<T>::ptr_ + i, rhs.ptr_[i]);
+		allocator<T>::construct(allocator<T>::ptr_ + i, rhs.ptr_[i]);
 	}
 	allocator<T>::count_ = rhs.count_;
 }
@@ -128,16 +131,18 @@ stack<T>::stack(const stack & rhs) : allocator<T>(rhs.size_)
 template <typename T>
 auto stack<T>::push(T const & value)->void
 {
-	if (allocator<T>::size_ == allocator<T>::count_)
+	if (this->size_ == this->count_)
 	{
-		size_t size = allocator<T>::size_ * 2 + (allocator<T>::size_ == 0);
-		T * ptr = new_copy(allocator<T>::ptr_, allocator<T>::count_, size);
-		delete[] allocator<T>::ptr_;
-		allocator<T>::ptr_ = ptr;
-		allocator<T>::size_ = size;
+		size_t size = this->size_ * 2 + (this->size_ == 0);
+		stack temp { size };
+		while (temp.count() < this->count_) 
+		{
+		       temp.push(this->ptr_[temp.count()]);
+		}
+		this->swap(temp);   
 	}
-	allocator<T>::ptr_[allocator<T>::count_] = value;
-	++allocator<T>::count_;
+	this->construct(this->ptr_ + this->count_, value);
+	++this->count_;
 }
 
 
@@ -159,7 +164,8 @@ auto stack<T>::pop()->T
 	{
 		throw std::logic_error("The stack is Empty");
 	}
-	return allocator<T>::ptr_[--allocator<T>::count_];
+	--allocator<T>::count_;
+	allocator<T>::destroy(&allocator<T>::ptr_[allocator<T>::count_]);
 }
 
 
