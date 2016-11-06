@@ -4,7 +4,7 @@
 
 
 template <typename T>
-auto new_array(const T * array_, size_t size, size_t new_size)
+auto new_array(const T * array_, size_t size, size_t new_size) -> T*
 { 
 	T * temp = new T[new_size];
 	try 
