@@ -242,19 +242,14 @@ public:
 	explicit
 	stack(size_t size = 0);
 	auto operator =(stack const & other) -> stack &;   /*strong*/
-	
-
 	auto empty() const -> bool;   /*noexcept*/
 	auto count() const -> size_t;   /*noexcept*/
-
 	auto push(T const & value) -> void;   /*strong*/
 	auto pop() -> void;   /*strong*/
 	auto top() -> T &;   /*strong*/
 	auto top() const -> T const &;   /*strong*/
-
 private:
 	allocator<T> allocator_;
-
 	auto throw_is_empty() const -> void;   /*strong*/
 };
 
