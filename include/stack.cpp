@@ -3,6 +3,23 @@
 #include <memory>
 
 
+template <typename T>
+auto new_array(const T * array_, size_t size, size_t new_size)
+{ 
+	T * temp = new T[new_size];
+	try 
+	{
+		std::copy(array_, array_ + size, temp);
+	}
+	catch (...) 
+	{
+		delete[] temp;
+		throw;
+	}
+	return temp;
+}
+
+
 //_______________________________________________________________________________________________________________________________________
 //_______________________________________________________________________________________________________________________________________
 
@@ -12,20 +29,15 @@ class bitset
 public:
 	explicit
 	bitset(size_t size)   /*strong*/;
-
 	bitset(bitset const & other) = delete;
-	auto operator =(bitset const & other)->bitset & = delete;
-
+	auto operator =(bitset const & other) -> bitset & = delete;
 	bitset(bitset && other) = delete;
 	auto operator =(bitset && other)->bitset & = delete;
-
-	auto set(size_t index)->void;   /*strong*/
-	auto reset(size_t index)->void;   /*strong*/
-	auto test(size_t index)->bool;   /*strong*/
-
-	auto size()->size_t;   /*noexcept*/
-	auto counter()->size_t;   /*noexcept*/
-
+	auto set(size_t index) -> void;   /*strong*/
+	auto reset(size_t index) -> void;   /*strong*/
+	auto test(size_t index) -> bool;   /*strong*/
+	auto size() -> size_t;   /*noexcept*/
+	auto counter() -> size_t;   /*noexcept*/
 private:
 	std::unique_ptr<bool[]>  ptr_;
 	size_t size_;
@@ -86,23 +98,19 @@ public:
 	explicit
 	allocator(std::size_t size = 0);   /*strong*/
 	allocator(allocator const & other);   /*strong*/
-	auto operator =(allocator const & other)->allocator & = delete;
+	auto operator =(allocator const & other) -> allocator & = delete;
 	~allocator();
-
-	auto resize()->void;   /*strong*/
-
-	auto construct(T * ptr, T const & value)->void;   /*strong*/
-	auto destroy(T * ptr)->void;   /*noexcept*/
-
-	auto get()->T *;   /*noexcept*/
-	auto get() const->T const *;   /*noexcept*/
-
-	auto count() const->size_t;   /*noexcept*/
-	auto full() const->bool;   /*noexcept*/
-	auto empty() const->bool;   /*noexcept*/
-	auto swap(allocator & other)->void;   /*noexcept*/
+	auto resize() -> void;   /*strong*/
+	auto construct(T * ptr, T const & value) -> void;   /*strong*/
+	auto destroy(T * ptr) -> void;   /*noexcept*/
+	auto get() -> T *;   /*noexcept*/
+	auto get() const -> T const *;   /*noexcept*/
+	auto count() const -> size_t;   /*noexcept*/
+	auto full() const -> bool;   /*noexcept*/
+	auto empty() const -> bool;   /*noexcept*/
+	auto swap(allocator & other) -> void;   /*noexcept*/
 private:
-	auto destroy(T * first, T * last)->void;   /*strong*/
+	auto destroy(T * first, T * last) -> void;   /*strong*/
 	
 	T * ptr_;
 	size_t size_;
@@ -233,38 +241,22 @@ class stack
 public:
 	explicit
 	stack(size_t size = 0);
-	auto operator =(stack const & other)->stack &;   /*strong*/
+	auto operator =(stack const & other) -> stack &;   /*strong*/
 	
 
-	auto empty() const->bool;   /*noexcept*/
-	auto count() const->size_t;   /*noexcept*/
+	auto empty() const -> bool;   /*noexcept*/
+	auto count() const -> size_t;   /*noexcept*/
 
-	auto push(T const & value)->void;   /*strong*/
-	auto pop()->void;   /*strong*/
-	auto top()->T &;   /*strong*/
-	auto top() const->T const &;   /*strong*/
+	auto push(T const & value) -> void;   /*strong*/
+	auto pop() -> void;   /*strong*/
+	auto top() -> T &;   /*strong*/
+	auto top() const -> T const &;   /*strong*/
 
 private:
 	allocator<T> allocator_;
 
 	auto throw_is_empty() const -> void;   /*strong*/
 };
-
-//template <typename T>
-//auto new_copy(const T * source,  size_t new_size,size_t current_size) -> T*/*strong*/
-//{
-//        T * new_array = new T[new_size];
-//	try
-//	{
-//		std::copy(source, source + current_size, new_array);
-//	}
-//	catch(...)
-//	{
-//		delete []new_array;
-//		throw;
-//	}
-//	return new_array;
-//};
 
 
 template <typename T>
