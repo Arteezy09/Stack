@@ -3,6 +3,10 @@
 #include <memory>
 
 
+//_______________________________________________________________________________________________________________________________________
+//_______________________________________________________________________________________________________________________________________
+
+
 class bitset
 {
 public:
@@ -229,21 +233,21 @@ class stack
 public:
 	explicit
 	stack(size_t size = 0);
-	auto operator =(stack const & other) /*strong*/ -> stack &;
+	auto operator =(stack const & other)->stack &;   /*strong*/
 	
 
-	auto empty() const /*noexcept*/ -> bool;
-	auto count() const /*noexcept*/ -> size_t;
+	auto empty() const->bool;   /*noexcept*/
+	auto count() const->size_t;   /*noexcept*/
 
-	auto push(T const & value) /*strong*/ -> void;
-	auto pop() /*strong*/ -> void;
-	auto top() /*strong*/ -> T &;
-	auto top() const /*strong*/ -> T const &;
+	auto push(T const & value)->void;   /*strong*/
+	auto pop()->void;   /*strong*/
+	auto top()->T &;   /*strong*/
+	auto top() const->T const &;   /*strong*/
 
 private:
 	allocator<T> allocator_;
 
-	auto throw_is_empty()/*strong*/ const -> void;
+	auto throw_is_empty() const -> void;   /*strong*/
 };
 
 //template <typename T>
@@ -263,13 +267,13 @@ private:
 //};
 
 
-template <typename T>/*noexcept*/
+template <typename T>
 stack<T>::stack(size_t size) : allocator_(size)
 {};
 
 
 template <typename T>
-auto stack<T>::operator=(const stack & st)-> stack &/*strong*/
+auto stack<T>::operator=(const stack & st)-> stack &
 {
 	if (this != &st)
 	{
@@ -280,14 +284,14 @@ auto stack<T>::operator=(const stack & st)-> stack &/*strong*/
 
 
 template <typename T>
-size_t  stack<T>::count() const/*noexcept*/
+size_t  stack<T>::count() const
 {
 	return allocator_.count();
 };
 
 
 template <typename T>
-void stack<T>::push(T const &value)/*strong*/
+void stack<T>::push(T const &value)
 {
 	if (allocator_.full())
 		allocator_.resize();
@@ -296,7 +300,7 @@ void stack<T>::push(T const &value)/*strong*/
 
 
 template <typename T>
-void stack<T>::pop()/*strong*/
+void stack<T>::pop()
 {
 	if (allocator_.count() == 0)
 	{
@@ -307,7 +311,7 @@ void stack<T>::pop()/*strong*/
 
 
 template <typename T>
-auto stack<T>::top()-> T&/*strong*/
+auto stack<T>::top()-> T&
 {
 	if (this->count() > 0) 
 		return(*(allocator_.get() + this->count() - 1));
@@ -324,7 +328,7 @@ auto stack<T>::top()const->T const &
 }
 
 
-template <typename T>/*noexcept*/
+template <typename T>
 auto stack<T>::empty()const->bool 
 {
 	return(allocator_.empty() == 1);
