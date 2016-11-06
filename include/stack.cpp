@@ -1,6 +1,7 @@
 #include <cstring>
 #include <iostream>
 #include <memory>
+#include <new>  
 
 
 template <typename T>
