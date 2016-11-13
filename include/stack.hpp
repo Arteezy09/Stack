@@ -5,6 +5,8 @@
 #include <memory>
 
 
+//_________________________________________________________________________________________________________________________________________
+//_________________________________________________________________________________________________________________________________________
 
 
 class bitset
@@ -31,68 +33,50 @@ private:
 	size_t counter_;
 };
 
-auto bitset::size()-> size_t {
-	return size_;
-}
-auto bitset::counter()-> size_t {
-	return counter_;
-}
-
-bitset::bitset(size_t size) :
-	ptr_(std::make_unique<bool[]>(size)),
-	size_(size),counter_(0) {
-	
+bitset::bitset(size_t size) : ptr_(std::make_unique<bool[]>(size)),
+size_(size), counter_(0) {
 }
 
 
-
-auto bitset::reset(size_t index)->void {
-	
-	if (index <= size()) {
-		if (test(index) != false) {
-			ptr_[index] = false;
-			--counter_;
-		}
-	}
-	else {
-		throw std::out_of_range("Error");
-	}
+auto bitset::set(size_t index) -> void { 
+	if (index < size_)
+	{ 
+		ptr_[index] = true; 
+		++counter_; 
+	} 
+        else throw("Error!"); 
 }
 
 
-
-auto bitset::set(size_t index)->void {
-	
-	
-	if (index <= size()) {
-		if (test(index) != true) {
-			
-			ptr_[index] = true;
-			++counter_;
-			std::cout << counter_ << " counter" << std::endl;
-		}
-	}
-	else {
-		throw std::out_of_range("Error");
-	}
-
-
+auto bitset::reset(size_t index) -> void { 
+	if (index < size_) 
+	{ 
+		ptr_[index] = false; 
+		--counter_; 
+	} 
+	else throw("Error!"); 
 }
 
 
-auto bitset::test(size_t index) ->bool{
-	if (index <= size()) {
-		return ptr_[index];
-	}
-	else {
-		throw std::out_of_range("Error");
-	}
+auto bitset::test(size_t index) -> bool { 
+	if (index < size_) 
+		return ptr_[index]; 
+	else throw("Error!"); 
 }
 
 
+auto bitset::size() -> size_t { 
+	return size_; 
+}
+
+
+auto bitset::counter() -> size_t { 
+	return counter_; 
+}
 
 //__________________________________________________________________________________________________________________
 //__________________________________________________________________________________________________________________
+
 
 template <typename T>
 class allocator
