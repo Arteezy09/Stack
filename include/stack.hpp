@@ -29,8 +29,8 @@ auto new_array(const T * array_, size_t size, size_t new_size) -> T*
 class bitset
 {
 public:
-	explicit
-	bitset(size_t size) /*strong*/;  // конструктор по умолчанию
+	explicit // explicit используется для создания явных конструкторов
+	bitset(size_t size) /*strong*/;  // конструктор c параметром
 
 	bitset(bitset const & other) = delete;   // конструктор копирования
 	auto operator =(bitset const & other)->bitset & = delete; // оператор присваивания 
@@ -100,7 +100,7 @@ template <typename T>
 class allocator
 {
 public:
-	explicit
+	explicit // explicit используется для создания явных конструкторов
 	allocator(std::size_t size = 0) /*strong*/;
 	allocator(allocator const & other) /*strong*/;
 	auto operator =(allocator const & other)->allocator & = delete;
@@ -176,7 +176,7 @@ auto allocator<T>::destroy(T * ptr)->void
 }
 
 
-template <typename T>                                  // освобождает указанное число объектов из памяти с заданной позиции
+template <typename T>                     // освобождает указанное число объектов из памяти с заданной позиции
 auto allocator<T>::destroy(T * first, T * last)->void
 {
 	for (; first != last; ++first) {
@@ -201,7 +201,7 @@ auto allocator<T>::empty() const -> bool {
 	return (map_->counter() == 0);
 }
 
-template<typename T>  // проверука на полноту
+template<typename T>  // проверка на полноту
 auto allocator<T>::full() const -> bool {
 	return (map_->counter() == size_);
 }
@@ -230,7 +230,7 @@ template <typename T>
 class stack
 {
 public:
-	explicit
+	explicit // explicit используется для создания явных конструкторов
 	stack(size_t size = 0);/*strong*/
 	auto operator =(stack const & other) /*strong*/ -> stack &;
 	stack (stack const & other) =default;/*strong*/
