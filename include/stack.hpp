@@ -82,12 +82,12 @@ auto bitset::test(size_t index) -> bool { // возвращает значени
 }
 
 
-auto bitset::size() -> size_t {  // возвращает количество бит в объекте bitset
+auto bitset::size() -> size_t {  // возвращает количество бит в объекте bitset(размер объекта)
 	return size_; 
 }
 
 
-auto bitset::counter() -> size_t { // функция возвращает количество бит
+auto bitset::counter() -> size_t { // функция возвращает количество бит(количество элементов)
 	return counter_; 
 }
 
