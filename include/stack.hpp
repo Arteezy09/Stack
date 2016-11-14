@@ -30,12 +30,12 @@ class bitset
 {
 public:
 	explicit
-	bitset(size_t size) /*strong*/;
+	bitset(size_t size) /*strong*/;  // конструктор по умолчанию
 
-	bitset(bitset const & other) = delete;
-	auto operator =(bitset const & other)->bitset & = delete;
-	bitset(bitset && other) = delete;
-	auto operator =(bitset && other)->bitset & = delete;
+	bitset(bitset const & other) = delete;   // конструктор копирования
+	auto operator =(bitset const & other)->bitset & = delete; // оператор присваивания 
+	bitset(bitset && other) = delete; // конструктор перемещения 
+	auto operator =(bitset && other)->bitset & = delete; // конструктор перемещ. копирования
 
 
 	auto set(size_t index) /*strong*/ -> void;
@@ -55,8 +55,8 @@ size_(size), counter_(0) {
 }
 
 
-auto bitset::set(size_t index) -> void { 
-	if (index < size_)
+auto bitset::set(size_t index) -> void {  // присваивает биту в указанной позиции значение 1
+	if (index < size_)                
 	{ 
 		ptr_[index] = true; 
 		++counter_; 
@@ -65,7 +65,7 @@ auto bitset::set(size_t index) -> void {
 }
 
 
-auto bitset::reset(size_t index) -> void { 
+auto bitset::reset(size_t index) -> void { // сбрасывает бит в указанной позиции в 0
 	if (index < size_) 
 	{ 
 		ptr_[index] = false; 
@@ -75,19 +75,19 @@ auto bitset::reset(size_t index) -> void {
 }
 
 
-auto bitset::test(size_t index) -> bool { 
+auto bitset::test(size_t index) -> bool { // возвращает значение указанного бита объекта bitset
 	if (index < size_) 
 		return ptr_[index]; 
 	else throw("Error!"); 
 }
 
 
-auto bitset::size() -> size_t { 
+auto bitset::size() -> size_t {  // возвращает количество бит в объекте bitset
 	return size_; 
 }
 
 
-auto bitset::counter() -> size_t { 
+auto bitset::counter() -> size_t { // функция возвращает количество бит
 	return counter_; 
 }
 
@@ -149,15 +149,15 @@ allocator<T>::~allocator() {
 };
 
 template <typename T>
-auto allocator<T>::swap(allocator & other)->void {
+auto allocator<T>::swap(allocator & other)->void { // обменивает значения двух аргументов
 	std::swap(ptr_, other.ptr_);
 	std::swap(size_, other.size_);
 	std::swap(map_, other.map_);
 };
 
 template <typename T>
-auto allocator<T>::construct(T * ptr, T const & value)->void {
-	if (ptr < ptr_ || ptr >= ptr_ + size_) {
+auto allocator<T>::construct(T * ptr, T const & value)->void { // создает определенный тип объектов по указанному
+	if (ptr < ptr_ || ptr >= ptr_ + size_) {               // адресу и обеспечивает семантику перемещения
 		throw std::out_of_range("Error");
 	}
 	new(ptr) T(value);
@@ -167,7 +167,7 @@ auto allocator<T>::construct(T * ptr, T const & value)->void {
 	
 }
 
-template <typename T>
+template <typename T>                      // 
 auto allocator<T>::destroy(T * ptr)->void
 {
 
@@ -176,7 +176,7 @@ auto allocator<T>::destroy(T * ptr)->void
 }
 
 
-template <typename T>
+template <typename T>                                  // освобождает указанное число объектов из памяти с заданной позиции
 auto allocator<T>::destroy(T * first, T * last)->void
 {
 	for (; first != last; ++first) {
@@ -207,7 +207,7 @@ auto allocator<T>::full() const -> bool {
 }
 
 template<typename T>
-auto allocator<T>::get() -> T * {
+auto allocator<T>::get() -> T * { // 
 	return ptr_;
 }
 
