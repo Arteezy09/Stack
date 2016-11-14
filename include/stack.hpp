@@ -35,7 +35,7 @@ public:
 	bitset(bitset const & other) = delete;   // конструктор копирования
 	auto operator =(bitset const & other)->bitset & = delete; // оператор присваивания 
 	bitset(bitset && other) = delete; // конструктор перемещения 
-	auto operator =(bitset && other)->bitset & = delete; // конструктор перемещ. копирования
+	auto operator =(bitset && other)->bitset & = delete; // перемещяющийся оператор присваивания
 
 
 	auto set(size_t index) /*strong*/ -> void;
