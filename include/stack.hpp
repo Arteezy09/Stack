@@ -128,19 +128,19 @@ private:
 };
 
 
-template <typename T>
+template <typename T>  // конструктор с параметром
 allocator<T>::allocator(size_t size): ptr_(static_cast<T *>(size == 0 ? nullptr : operator new(size * sizeof(T)))), size_(size), map_(std::make_unique<bitset>(size)){
 
 };
 
-template<typename T>
+template<typename T>    // конструктор копирования 
 allocator<T>::allocator(allocator const & tmp) :allocator<T>(tmp.size_){
 	for (size_t i = 0; i < size_; ++i) {
 		construct(ptr_ + i, tmp.ptr_[i]);
 	}
 }
 
-template <typename T>
+template <typename T>  // деструктор
 allocator<T>::~allocator() {
 	if (map_->counter() > 0) {
 		destroy(ptr_, ptr_ + map_->counter());
@@ -167,7 +167,7 @@ auto allocator<T>::construct(T * ptr, T const & value)->void { // создает
 	
 }
 
-template <typename T>                      // 
+template <typename T>    // освобождает все объекты из памяти                  // 
 auto allocator<T>::destroy(T * ptr)->void
 {
 
@@ -184,7 +184,7 @@ auto allocator<T>::destroy(T * first, T * last)->void
 	}
 }
 
-template<typename T>
+template<typename T> // увеличение памяти
 auto allocator<T>::resize()-> void {
 	size_t size = size_ * 2 + (size_ == 0);
 	allocator<T> buff(size);
@@ -196,17 +196,17 @@ auto allocator<T>::resize()-> void {
 	size_ = size;
 }
 
-template<typename T>
+template<typename T>  // проверка на пустоту
 auto allocator<T>::empty() const -> bool {
 	return (map_->counter() == 0);
 }
 
-template<typename T>
+template<typename T>  // проверука на полноту
 auto allocator<T>::full() const -> bool {
 	return (map_->counter() == size_);
 }
 
-template<typename T>
+template<typename T>  // возвратить ptr_
 auto allocator<T>::get() -> T * { // 
 	return ptr_;
 }
@@ -216,7 +216,7 @@ auto allocator<T>::get() const -> T const * {
 	return ptr_;
 }
 
-template<typename T>
+template<typename T> 
 auto allocator<T>::count() const -> size_t {
 	return map_->counter();
 }
