@@ -5,7 +5,7 @@
 #include <memory>
 
 
-template <typename T>
+/*template <typename T>
 auto new_array(const T * array_, size_t size, size_t new_size) -> T*
 { 
 	T * temp = new T[new_size];
@@ -19,7 +19,7 @@ auto new_array(const T * array_, size_t size, size_t new_size) -> T*
 		throw;
 	}
 	return temp;
-}
+}*/
 
 
 //_________________________________________________________________________________________________________________________________________
@@ -32,10 +32,10 @@ public:
 	explicit // explicit используется для создания явных конструкторов
 	bitset(size_t size) /*strong*/;  // конструктор c параметром
 
-	bitset(bitset const & other) = delete;   // конструктор копирования
-	auto operator =(bitset const & other)->bitset & = delete; // оператор присваивания 
-	bitset(bitset && other) = delete; // конструктор перемещения 
-	auto operator =(bitset && other)->bitset & = delete; // перемещяющийся оператор присваивания
+	bitset(bitset const & other) = delete; // конструктор копирования, запрещен
+	auto operator =(bitset const & other)->bitset & = delete; // оператор присваивания, запрещен
+	bitset(bitset && other) = delete; // конструктор перемещения, запрещен
+	auto operator =(bitset && other)->bitset & = delete; // оператор присваивания перемещения, запрещен
 
 
 	auto set(size_t index) /*strong*/ -> void;
