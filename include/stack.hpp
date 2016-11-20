@@ -38,15 +38,15 @@ public:
 	auto operator =(bitset && other)->bitset & = delete; // оператор присваивания перемещения, запрещен
 
 
-	auto set(size_t index) /*strong*/ -> void;
-	auto reset(size_t index) /*strong*/ -> void;
-	auto test(size_t index) /*strong*/ -> bool;
-	auto counter() /*noexcept*/ -> size_t;
-	auto size() /*noexcept*/ -> size_t;
+	auto set(size_t index) /*strong*/ -> void; // инициализация битов единицами
+	auto reset(size_t index) /*strong*/ -> void; // обнуление битов
+	auto test(size_t index) /*strong*/ -> bool; // возврат значения бита объекта bitset
+	auto counter() /*noexcept*/ -> size_t; // возврат количество битов, равных 1
+	auto size() /*noexcept*/ -> size_t; // возврат размер объекта bitset (количество битов)
 
 private:
-	std::unique_ptr<bool[]>  ptr_;
-	size_t size_;
+	std::unique_ptr<bool[]>  ptr_; // умный указатель, который не может быть скопирован или задан через операцию присвоения,
+	size_t size_;                  // но он может быть передан другому unique_ptr
 	size_t counter_;
 };
 
@@ -55,7 +55,7 @@ size_(size), counter_(0) {
 }
 
 
-auto bitset::set(size_t index) -> void {  // присваивает биту в указанной позиции значение 1
+auto bitset::set(size_t index) -> void {  
 	if (index < size_)                
 	{ 
 		ptr_[index] = true; 
@@ -65,7 +65,7 @@ auto bitset::set(size_t index) -> void {  // присваивает биту в 
 }
 
 
-auto bitset::reset(size_t index) -> void { // сбрасывает бит в указанной позиции в 0
+auto bitset::reset(size_t index) -> void { 
 	if (index < size_) 
 	{ 
 		ptr_[index] = false; 
@@ -75,21 +75,17 @@ auto bitset::reset(size_t index) -> void { // сбрасывает бит в у�
 }
 
 
-auto bitset::test(size_t index) -> bool { // возвращает значение указанного бита объекта bitset
+auto bitset::test(size_t index) -> bool { 
 	if (index < size_) 
 		return ptr_[index]; 
 	else throw("Error!"); 
 }
 
 
-auto bitset::size() -> size_t {  // возвращает количество бит в объекте bitset(размер объекта)
-	return size_; 
-}
+auto bitset::size() -> size_t { return size_; }
 
 
-auto bitset::counter() -> size_t { // функция возвращает количество бит(количество элементов)
-	return counter_; 
-}
+auto bitset::counter() -> size_t { return counter_; }
 
 
 //__________________________________________________________________________________________________________________
