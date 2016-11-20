@@ -5,23 +5,6 @@
 #include <memory>
 
 
-/*template <typename T>
-auto new_array(const T * array_, size_t size, size_t new_size) -> T*
-{ 
-	T * temp = new T[new_size];
-	try 
-	{
-		std::copy(array_, array_ + size, temp);
-	}
-	catch (...) 
-	{
-		delete[] temp;
-		throw;
-	}
-	return temp;
-}*/
-
-
 //_________________________________________________________________________________________________________________________________________
 //_________________________________________________________________________________________________________________________________________
 
@@ -98,9 +81,9 @@ class allocator
 public:
 	explicit // explicit используется для создания явных конструкторов
 	allocator(std::size_t size = 0) /*strong*/;
-	allocator(allocator const & other) /*strong*/;
-	auto operator =(allocator const & other)->allocator & = delete;
-	~allocator();/*noexcept*/
+	allocator(allocator const & other) /*strong*/; // конструктор копирования
+	auto operator =(allocator const & other)->allocator & = delete; // оператор присваивания, запрещен
+	~allocator() /*noexcept*/; // деструктор
 
 	auto resize() /*strong*/ -> void;
 
@@ -111,45 +94,44 @@ public:
 	auto get() const /*noexcept*/ -> T const *;
 
 	auto count() const /*noexcept*/ -> size_t;
-	auto full() const /*noexcept*/ -> bool;
-	auto empty() const /*noexcept*/ -> bool;
-	auto swap(allocator & other) /*noexcept*/ -> void;
+	auto full() const /*noexcept*/ -> bool; // проверка на полноту
+	auto empty() const /*noexcept*/ -> bool; // проверка на пустоту
+	auto swap(allocator & other) /*noexcept*/ -> void; // обмен значений 2 аргументов
 private:
 	auto destroy(T * first, T * last) /*noexcept*/ -> void;
 	
-
 	size_t size_;
 	T * ptr_;
 	std::unique_ptr<bitset> map_;
 };
 
 
-template <typename T>  // конструктор с параметром
-allocator<T>::allocator(size_t size): ptr_(static_cast<T *>(size == 0 ? nullptr : operator new(size * sizeof(T)))), size_(size), map_(std::make_unique<bitset>(size)){
+template <typename T>  
+allocator<T>::allocator(size_t size) : ptr_(static_cast<T *>(size == 0 ? nullptr : operator new(size * sizeof(T)))), 
+size_(size), map_(std::make_unique<bitset>(size)){
+}
 
-};
-
-template<typename T>    // конструктор копирования 
-allocator<T>::allocator(allocator const & tmp) :allocator<T>(tmp.size_){
+template<typename T>    
+allocator<T>::allocator(allocator const & tmp) : allocator<T>(tmp.size_){
 	for (size_t i = 0; i < size_; ++i) {
 		construct(ptr_ + i, tmp.ptr_[i]);
 	}
 }
 
-template <typename T>  // деструктор
+template <typename T>  
 allocator<T>::~allocator() {
 	if (map_->counter() > 0) {
 		destroy(ptr_, ptr_ + map_->counter());
 	}
 	operator delete(ptr_);
-};
+}
 
 template <typename T>
-auto allocator<T>::swap(allocator & other)->void { // обменивает значения двух аргументов
+auto allocator<T>::swap(allocator & other)->void { 
 	std::swap(ptr_, other.ptr_);
 	std::swap(size_, other.size_);
 	std::swap(map_, other.map_);
-};
+}
 
 template <typename T>
 auto allocator<T>::construct(T * ptr, T const & value)->void { // создает определенный тип объектов по указанному
@@ -158,15 +140,11 @@ auto allocator<T>::construct(T * ptr, T const & value)->void { // создает
 	}
 	new(ptr) T(value);
 	map_->set(ptr - ptr_);
-	
-	
-	
 }
 
 template <typename T>    // освобождает все объекты из памяти                  // 
 auto allocator<T>::destroy(T * ptr)->void
 {
-
 	ptr->~T();
 	map_->reset(ptr - ptr_);	
 }
@@ -185,37 +163,27 @@ auto allocator<T>::resize()-> void {
 	size_t size = size_ * 2 + (size_ == 0);
 	allocator<T> buff(size);
 	for (size_t i = 0; i < size_; ++i) {
-	if (map_->test(i))
-{		buff.construct(buff.ptr_ + i, ptr_[i]);}
+	if (map_->test(i)) 
+	{ buff.construct(buff.ptr_ + i, ptr_[i]); }
 	}
 	this->swap(buff);
 	size_ = size;
 }
 
-template<typename T>  // проверка на пустоту
-auto allocator<T>::empty() const -> bool {
-	return (map_->counter() == 0);
-}
+template<typename T>  
+auto allocator<T>::empty() const -> bool { return (map_->counter() == 0); }
 
-template<typename T>  // проверка на полноту
-auto allocator<T>::full() const -> bool {
-	return (map_->counter() == size_);
-}
+template<typename T>  
+auto allocator<T>::full() const -> bool { return (map_->counter() == size_); }
 
-template<typename T>  // возвратить ptr_
-auto allocator<T>::get() -> T * { // 
-	return ptr_;
-}
+template<typename T>  
+auto allocator<T>::get() -> T * { return ptr_; }
 
 template<typename T>
-auto allocator<T>::get() const -> T const * {
-	return ptr_;
-}
+auto allocator<T>::get() const -> T const * { return ptr_; }
 
 template<typename T> 
-auto allocator<T>::count() const -> size_t {
-	return map_->counter();
-}
+auto allocator<T>::count() const -> size_t { return map_->counter(); }
 
 
 //__________________________________________________________________________________________________________________
