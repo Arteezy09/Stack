@@ -38,7 +38,7 @@ size_(size), counter_(0) {
 }
 
 
-auto bitset::set(size_t index) -> void {  
+auto bitset::set(size_t index) -> void { // инициализация битов единицами
 	if (index < size_)                
 	{ 
 		ptr_[index] = true; 
@@ -48,7 +48,7 @@ auto bitset::set(size_t index) -> void {
 }
 
 
-auto bitset::reset(size_t index) -> void { 
+auto bitset::reset(size_t index) -> void { // обнуление битов
 	if (index < size_) 
 	{ 
 		ptr_[index] = false; 
@@ -58,17 +58,17 @@ auto bitset::reset(size_t index) -> void {
 }
 
 
-auto bitset::test(size_t index) -> bool { 
+auto bitset::test(size_t index) -> bool { // возврат значения бита объекта bitset
 	if (index < size_) 
 		return ptr_[index]; 
 	else throw("Error!"); 
 }
 
 
-auto bitset::size() -> size_t { return size_; }
+auto bitset::size() -> size_t { return size_; } // возврат размер объекта bitset (количество битов)
 
 
-auto bitset::counter() -> size_t { return counter_; }
+auto bitset::counter() -> size_t { return counter_; } // возврат количество битов, равных 1
 
 
 //__________________________________________________________________________________________________________________
