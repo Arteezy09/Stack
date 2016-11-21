@@ -32,8 +32,8 @@ void destroy(T * ptr) noexcept  // памяти, вызывается дестр
 	ptr->~T();
 }
 
-template <typename FwdIter>
-void destroy(FwdIter first, FwdIter last) noexcept
+template <typename FwdIter>                         // уничтожает часть объекта без освобождения памяти, вызывается destroy
+void destroy(FwdIter first, FwdIter last) noexcept  
 {
 	for (; first != last; ++first) {
 		destroy(&*first);
