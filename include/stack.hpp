@@ -10,24 +10,24 @@ template<typename T>
 class allocator 
 {
 protected:
-	allocator(size_t size = 0);
-	~allocator();
-	auto swap(allocator& other)->void;
-	allocator(allocator const&) = delete;
-	auto operator=(allocator const&)->allocator& = delete;
+	allocator(size_t size = 0); /*strong*/
+	~allocator(); /*noexcept*/
+	auto swap(allocator& other)->void; /*noexcept*/
+	allocator(allocator const &) = delete; /*strong*/ // конструктор копирования, запрещен
+	auto operator=(allocator const &)->allocator & = delete; // оператор присваивания, запрещен
 	T * ptr_;
 	size_t size_;
 	size_t count_;
 };
 
 
-template <typename T1, typename T2>
-auto construct(T1 * ptr, T2 const & value)->void {
+template <typename T1, typename T2>                 // инициализирует память элементов, на который ссылается указатель
+auto construct(T1 * ptr, T2 const & value)->void {  // ptr, списком аргументов value
 	new(ptr) T1(value);
 }
 
-template <typename T>
-void destroy(T * ptr) noexcept
+template <typename T>           // уничтожает объект, на который ссылается указатель ptr, без освобождения
+void destroy(T * ptr) noexcept  // памяти, вызывается деструктор объекта
 {
 	ptr->~T();
 }
@@ -40,21 +40,22 @@ void destroy(FwdIter first, FwdIter last) noexcept
 	}
 }
 
-template <typename T>
-allocator<T>::allocator(size_t size) : ptr_(static_cast<T *>(size == 0 ? nullptr : operator new(size * sizeof(T)))), size_(size), count_(0) {
-};
+template <typename T> // создание объекта, выделение памяти глобальной операцией new
+allocator<T>::allocator(size_t size) : ptr_(static_cast<T *>(size == 0 ? nullptr : operator new(size * sizeof(T)))),
+size_(size), count_(0) {
+}
 
-template <typename T>
+template <typename T> // деструктор
 allocator<T>::~allocator() {
-operator delete(ptr_);
-};
+operator delete(ptr_); // освобождение области памяти с помощью глобальной операции delete
+}
 
-template <typename T>
+template <typename T> // обмен значений 2 аргументов
 auto allocator<T>::swap(allocator& other)->void {
 	std::swap(ptr_, other.ptr_);
 	std::swap(size_, other.size_);
 	std::swap(count_, other.count_);
-};
+}
 
 //__________________________________________________________________________________________________________________
 //__________________________________________________________________________________________________________________
