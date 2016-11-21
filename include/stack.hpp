@@ -87,15 +87,16 @@ public:
 
 	auto resize() /*strong*/ -> void;
 
-	auto construct(T * ptr, T const & value) /*strong*/ -> void;
-	auto destroy(T * ptr) /*noexcept*/ -> void;
-
+	auto construct(T * ptr, T const & value) /*strong*/ -> void; // инициализирует память элементов, на который ссылается указатель
+	                                                             // ptr, списком аргументов value
+	auto destroy(T * ptr) /*noexcept*/ -> void; // уничтожает объект, на который ссылается указатель ptr, без освобождения
+                                                    // памяти, вызывается деструктор объекта
 	auto get() /*noexcept*/ -> T *;
 	auto get() const /*noexcept*/ -> T const *;
 
 	auto count() const /*noexcept*/ -> size_t;
-	auto full() const /*noexcept*/ -> bool; // проверка на полноту
-	auto empty() const /*noexcept*/ -> bool; // проверка на пустоту
+	auto full() const /*noexcept*/ -> bool; 
+	auto empty() const /*noexcept*/ -> bool; 
 	auto swap(allocator & other) /*noexcept*/ -> void; // обмен значений 2 аргументов
 private:
 	auto destroy(T * first, T * last) /*noexcept*/ -> void;
@@ -123,34 +124,34 @@ allocator<T>::~allocator() {
 	if (map_->counter() > 0) {
 		destroy(ptr_, ptr_ + map_->counter());
 	}
-	operator delete(ptr_);
+	operator delete(ptr_); // освобождение области памяти с помощью глобальной операции delete
 }
 
-template <typename T>
+template <typename T> // обмен значений 2 аргументов
 auto allocator<T>::swap(allocator & other)->void { 
 	std::swap(ptr_, other.ptr_);
 	std::swap(size_, other.size_);
 	std::swap(map_, other.map_);
 }
 
-template <typename T>
-auto allocator<T>::construct(T * ptr, T const & value)->void { // создает определенный тип объектов по указанному
-	if (ptr < ptr_ || ptr >= ptr_ + size_) {               // адресу и обеспечивает семантику перемещения
+template <typename T>                                          // инициализирует память элементов, на который ссылается указатель
+auto allocator<T>::construct(T * ptr, T const & value)->void { // ptr, списком аргументов value
+	if (ptr < ptr_ || ptr >= ptr_ + size_) {               
 		throw std::out_of_range("Error");
 	}
 	new(ptr) T(value);
 	map_->set(ptr - ptr_);
 }
 
-template <typename T>    // освобождает все объекты из памяти                  // 
-auto allocator<T>::destroy(T * ptr)->void
+template <typename T>                     // уничтожает объект, на который ссылается указатель ptr, без освобождения
+auto allocator<T>::destroy(T * ptr)->void // памяти, вызывается деструктор объекта
 {
 	ptr->~T();
 	map_->reset(ptr - ptr_);	
 }
 
 
-template <typename T>                     // освобождает указанное число объектов из памяти с заданной позиции
+template <typename T>                     
 auto allocator<T>::destroy(T * first, T * last)->void
 {
 	for (; first != last; ++first) {
@@ -158,7 +159,7 @@ auto allocator<T>::destroy(T * first, T * last)->void
 	}
 }
 
-template<typename T> // увеличение памяти
+template<typename T> 
 auto allocator<T>::resize()-> void {
 	size_t size = size_ * 2 + (size_ == 0);
 	allocator<T> buff(size);
