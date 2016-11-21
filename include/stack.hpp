@@ -33,7 +33,7 @@ private:
 	size_t counter_;
 };
 
-bitset::bitset(size_t size) : ptr_(std::make_unique<bool[]>(size)),
+bitset::bitset(size_t size) : ptr_(std::make_unique<bool[]>(size)), // создание объекта размером size, состоящий из всех нулей 
 size_(size), counter_(0) {
 }
 
@@ -83,7 +83,7 @@ public:
 	allocator(std::size_t size = 0) /*strong*/;
 	allocator(allocator const & other) /*strong*/; // конструктор копирования
 	auto operator =(allocator const & other)->allocator & = delete; // оператор присваивания, запрещен
-	~allocator() /*noexcept*/; // освобождене области памяти
+	~allocator() /*noexcept*/; // освобождение области памяти
 
 	auto resize() /*strong*/ -> void; // увеличение памяти
 
@@ -91,16 +91,17 @@ public:
 	                                                             // ptr, списком аргументов value
 	auto destroy(T * ptr) /*noexcept*/ -> void; // уничтожает объект, на который ссылается указатель ptr, без освобождения
                                                     // памяти, вызывается деструктор объекта
-	auto get() /*noexcept*/ -> T *;
-	auto get() const /*noexcept*/ -> T const *;
+	
+	auto get() /*noexcept*/ -> T *; // получение ptr_
+	auto get() const /*noexcept*/ -> T const *; // получение ptr_ (const метод)
 
-	auto count() const /*noexcept*/ -> size_t;
-	auto full() const /*noexcept*/ -> bool; 
-	auto empty() const /*noexcept*/ -> bool; 
+	auto count() const /*noexcept*/ -> size_t; 
+	auto full() const /*noexcept*/ -> bool; // полный?
+	auto empty() const /*noexcept*/ -> bool; // пустой?
 	auto swap(allocator & other) /*noexcept*/ -> void; // обмен значений 2 аргументов
 private:
-	auto destroy(T * first, T * last) /*noexcept*/ -> void; // уничтожает часть объекта, вызывается destroy, а после деструктор
-	
+	auto destroy(T * first, T * last) /*noexcept*/ -> void; // уничтожается часть объекта, для этого диапазона вызывается destroy, 
+	                                                        // а дальше явно вызывается деструктор объекта
 	size_t size_;
 	T * ptr_;
 	std::unique_ptr<bitset> map_;
@@ -151,8 +152,8 @@ auto allocator<T>::destroy(T * ptr)->void // памяти, вызывается 
 }
 
 
-template <typename T>             // уничтожается часть объекта, вызывается destroy, а дальше явно вызывается деструктор            
-auto allocator<T>::destroy(T * first, T * last)->void
+template <typename T>                                  // уничтожается часть объекта, для этого диапазона вызывается destroy,             
+auto allocator<T>::destroy(T * first, T * last)->void  // а дальше явно вызывается деструктор объекта
 {
 	for (; first != last; ++first) {
 		destroy(&*first);
