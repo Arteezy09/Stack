@@ -83,9 +83,9 @@ public:
 	allocator(std::size_t size = 0) /*strong*/;
 	allocator(allocator const & other) /*strong*/; // конструктор копирования
 	auto operator =(allocator const & other)->allocator & = delete; // оператор присваивания, запрещен
-	~allocator() /*noexcept*/; // деструктор
+	~allocator() /*noexcept*/; // освобождене области памяти
 
-	auto resize() /*strong*/ -> void;
+	auto resize() /*strong*/ -> void; // увеличение памяти
 
 	auto construct(T * ptr, T const & value) /*strong*/ -> void; // инициализирует память элементов, на который ссылается указатель
 	                                                             // ptr, списком аргументов value
@@ -107,19 +107,19 @@ private:
 };
 
 
-template <typename T>  
+template <typename T> // создание объекта, выделение памяти глобальной операцией new
 allocator<T>::allocator(size_t size) : ptr_(static_cast<T *>(size == 0 ? nullptr : operator new(size * sizeof(T)))), 
 size_(size), map_(std::make_unique<bitset>(size)){
 }
 
-template<typename T>    
-allocator<T>::allocator(allocator const & tmp) : allocator<T>(tmp.size_){
+template<typename T> // копирует объект распределителя памяти так,что область памяти, выделенная оригиналом или копией, может быть  
+allocator<T>::allocator(allocator const & tmp) : allocator<T>(tmp.size_){ // удалена одним из них
 	for (size_t i = 0; i < size_; ++i) {
 		construct(ptr_ + i, tmp.ptr_[i]);
 	}
 }
 
-template <typename T>  
+template <typename T> // деструктор
 allocator<T>::~allocator() {
 	if (map_->counter() > 0) {
 		destroy(ptr_, ptr_ + map_->counter());
@@ -159,7 +159,7 @@ auto allocator<T>::destroy(T * first, T * last)->void
 	}
 }
 
-template<typename T> 
+template<typename T> // увеличение памяти
 auto allocator<T>::resize()-> void {
 	size_t size = size_ * 2 + (size_ == 0);
 	allocator<T> buff(size);
