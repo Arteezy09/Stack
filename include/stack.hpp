@@ -99,7 +99,7 @@ public:
 	auto empty() const /*noexcept*/ -> bool; 
 	auto swap(allocator & other) /*noexcept*/ -> void; // обмен значений 2 аргументов
 private:
-	auto destroy(T * first, T * last) /*noexcept*/ -> void;
+	auto destroy(T * first, T * last) /*noexcept*/ -> void; // уничтожает часть объекта, вызывается destroy, а после деструктор
 	
 	size_t size_;
 	T * ptr_;
@@ -122,7 +122,7 @@ allocator<T>::allocator(allocator const & tmp) : allocator<T>(tmp.size_){ // у�
 template <typename T> // деструктор
 allocator<T>::~allocator() {
 	if (map_->counter() > 0) {
-		destroy(ptr_, ptr_ + map_->counter());
+		destroy(ptr_, ptr_ + map_->size());
 	}
 	operator delete(ptr_); // освобождение области памяти с помощью глобальной операции delete
 }
@@ -151,7 +151,7 @@ auto allocator<T>::destroy(T * ptr)->void // памяти, вызывается 
 }
 
 
-template <typename T>                     
+template <typename T>             // уничтожается часть объекта, вызывается destroy, а дальше явно вызывается деструктор            
 auto allocator<T>::destroy(T * first, T * last)->void
 {
 	for (; first != last; ++first) {
@@ -168,7 +168,6 @@ auto allocator<T>::resize()-> void {
 	{ buff.construct(buff.ptr_ + i, ptr_[i]); }
 	}
 	this->swap(buff);
-	size_ = size;
 }
 
 template<typename T>  
