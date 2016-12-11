@@ -209,7 +209,7 @@ public:
 	auto count() const /*noexcept*/ -> size_t;
 
 	auto push(T const & value) /*strong*/ -> void;
-	auto pop() /*strong*/ -> void;
+	auto pop() -> std::shared_ptr<T>;
 	auto top() /*strong*/ -> T &;
 	auto top() const /*strong*/ -> T const &;
 
@@ -267,14 +267,16 @@ void stack<T>::push(T const &value)/*strong*/
 }
 
 template <typename T>
-void stack<T>::pop()/*strong*/
+void stack<T>::pop()->std::shared_ptr<T>
 {
-	std::lock_guard<std::mutex> locker(mutexstack_);
+	std::lock_guard<std::mutex> lock(mutexstack_);
 	if (allocator_.count() == 0)
 	{
 		this->throw_is_empty();
 	}
+	std::shared_ptr<T> const res(std::make_shared<T>(std::move(allocate.get()[allocate.count()-1])));
 	allocator_.destroy(allocator_.get() + (allocator_.count()-1));
+	return res;
 }
 
 template <typename T>
