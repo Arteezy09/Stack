@@ -214,7 +214,7 @@ public:
 
 private:
 	allocator<T> allocator_;
-        mutable std::mutex mtxstack;
+        mutable std::mutex mutexstack_;
 	auto throw_is_empty()/*strong*/ const -> void;
 };
 
@@ -228,9 +228,9 @@ stack<T>::stack(size_t size) : allocator_(size)
 template <typename T>
 auto stack<T>::operator=(const stack &st)-> stack &/*strong*/
 {
-        std::lock(mtxstack,st.mtxstack);
-	std::lock_guard<std::mutex> lock_a(mtxstack, std::adopt_lock);		
- 	std::lock_guard<std::mutex> locker(st.mtxstack, std::adopt_lock);
+        std::lock(mutexstack_,st.mutexstack_);
+	std::lock_guard<std::mutex> lock_a(mutexstack_, std::adopt_lock);		
+ 	std::lock_guard<std::mutex> locker(st.mutexstack_, std::adopt_lock);
 	if (this != &st)
 	{
 		(allocator<T>(st.allocator_)).swap(this->allocator_);
@@ -241,14 +241,14 @@ auto stack<T>::operator=(const stack &st)-> stack &/*strong*/
 template <typename T>
 size_t  stack<T>::count() const/*noexcept*/
 {
-	std::lock_guard<std::mutex> locker(mtxstack);
+	std::lock_guard<std::mutex> locker(mutexstack_);
 	return allocator_.count();
 };
 
 template <typename T>
 void stack<T>::push(T const &value)/*strong*/
 {
-	std::lock_guard<std::mutex> locker(mtxstack);
+	std::lock_guard<std::mutex> locker(mutexstack_);
 	if (allocator_.full())
 		allocator_.resize();
 	allocator_.construct(allocator_.get() + allocator_.count(), value);
@@ -257,7 +257,7 @@ void stack<T>::push(T const &value)/*strong*/
 template <typename T>
 void stack<T>::pop()/*strong*/
 {
-	std::lock_guard<std::mutex> locker(mtxstack);
+	std::lock_guard<std::mutex> locker(mutexstack_);
 	if (allocator_.count() == 0)
 	{
 		this->throw_is_empty();
@@ -268,7 +268,7 @@ void stack<T>::pop()/*strong*/
 template <typename T>
 auto stack<T>::top()-> T&/*strong*/
 {
-	std::lock_guard<std::mutex> locker(mtxstack);
+	std::lock_guard<std::mutex> locker(mutexstack_);
 	if (allocator_.count() > 0) 
 		return(*(allocator_.get() + allocator_.count() - 1));
 	else this->throw_is_empty();
@@ -277,7 +277,7 @@ auto stack<T>::top()-> T&/*strong*/
 template<typename T>
 auto stack<T>::top()const->T const & 
 {
-	std::lock_guard<std::mutex> locker(mtxstack);
+	std::lock_guard<std::mutex> locker(mutexstack_);
 	if (allocator_.count() > 0) 
 		return(*(allocator_.get() + allocator_.count() - 1));
 	else this->throw_is_empty();
@@ -286,7 +286,7 @@ auto stack<T>::top()const->T const &
 template <typename T>/*noexcept*/
 auto stack<T>::empty()const->bool 
 {
-	std::lock_guard<std::mutex> locker(mtxstack);
+	std::lock_guard<std::mutex> locker(mutexstack_);
 	return(allocator_.empty() == 1);
 }
 
