@@ -297,8 +297,4 @@ auto stack<T>::empty()const->bool
 	return(allocator_.empty() == 1);
 }
 
-template<typename T>
-auto stack<T>::throw_is_empty()const->void
-{
-	throw std::logic_error("Error!"); 
-}
+
