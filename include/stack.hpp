@@ -267,7 +267,7 @@ void stack<T>::push(T const &value)/*strong*/
 }
 
 template <typename T>
-void stack<T>::pop()->std::shared_ptr<T>
+auto stack<T>::pop()->std::shared_ptr<T>
 {
 	std::lock_guard<std::mutex> lock(mutexstack_);
 	if (allocator_.count() == 0)
