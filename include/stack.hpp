@@ -3,6 +3,9 @@
 #include <stdexcept>
 #include <vector>
 #include <memory>
+#include <mutex>
+#include <functional>
+#include <thread>
 
 
 //_________________________________________________________________________________________________________________________________________
@@ -195,10 +198,11 @@ template <typename T>
 class stack
 {
 public:
-	explicit // explicit используется для создания явных конструкторов
-	stack(size_t size = 0);/*strong*/
+	explicit
+	stack(size_t size = 0);
 	auto operator =(stack const & other) /*strong*/ -> stack &;
-	stack (stack const & other) =default;/*strong*/
+	
+
 	auto empty() const /*noexcept*/ -> bool;
 	auto count() const /*noexcept*/ -> size_t;
 
@@ -208,68 +212,83 @@ public:
 	auto top() const /*strong*/ -> T const &;
 
 private:
-	allocator<T> allocate;
-
-	//auto throw_is_empty() const -> void;
+	allocator<T> allocator_;
+        mutable std::mutex mtxstack;
+	auto throw_is_empty()/*strong*/ const -> void;
 };
 
-
-/*template<typename T>
-auto stack<T>::throw_is_empty() const -> void {
-	throw std::logic_error("Error!"); 
-}*/
-
 template<typename T>
-auto stack<T>::empty() const->bool {
-	return (allocate.count() == 0);
+auto stack<T>::throw_is_empty()const->void
+{
+	throw std::logic_error("Error!"); 
 }
 
+template <typename T>/*noexcept*/
+stack<T>::stack(size_t size) : allocator_(size)
+{};
 
 template <typename T>
-stack<T>::stack(size_t size) : allocate(size) {};
-
-
-template <typename T>
-auto stack<T>::push(T const &val)->void {
-	if (allocate.full()) {
-		allocate.resize();
-	}
-	allocate.construct(allocate.get() + allocate.count(), val);
-}
-
-
-template <typename T>
-auto stack<T>::operator=(const stack &tmp)->stack&  {
-	if (this != &tmp) {
-		stack(tmp).allocate.swap(allocate);
+auto stack<T>::operator=(const stack &st)-> stack &/*strong*/
+{
+        std::lock(mtxstack,st.mtxstack);
+	std::lock_guard<std::mutex> lock_a(mtxstack, std::adopt_lock);		
+ 	std::lock_guard<std::mutex> locker(st.mtxstack, std::adopt_lock);
+	if (this != &st)
+	{
+		(allocator<T>(st.allocator_)).swap(this->allocator_);
 	}
 	return *this;
-}
-
-
-template <typename T>
-auto stack<T>::count() const->size_t {
-	return allocate.count();
-}
-
+};
 
 template <typename T>
-auto stack<T>::pop()->void {
-	if (allocate.count() == 0) throw std::logic_error("Empty!");
-	allocate.destroy(allocate.get() + (this->count()-1));
-}
-
-
-template <typename T>
-auto stack<T>::top() const->const T&{
-	if (allocate.count() == 0) throw std::logic_error("Empty!");
-return(*(allocate.get() + this->count() - 1));
-
-}
-
+size_t  stack<T>::count() const/*noexcept*/
+{
+	std::lock_guard<std::mutex> locker(mtxstack);
+	return allocator_.count();
+};
 
 template <typename T>
-auto stack<T>::top()->T&{
-	if (allocate.count() == 0) throw std::logic_error("Empty!");
-return(*(allocate.get() + this->count() - 1));
+void stack<T>::push(T const &value)/*strong*/
+{
+	std::lock_guard<std::mutex> locker(mtxstack);
+	if (allocator_.full())
+		allocator_.resize();
+	allocator_.construct(allocator_.get() + allocator_.count(), value);
+};
+
+template <typename T>
+void stack<T>::pop()/*strong*/
+{
+	std::lock_guard<std::mutex> locker(mtxstack);
+	if (allocator_.count() == 0)
+	{
+		this->throw_is_empty();
+	}
+	allocator_.destroy(allocator_.get() + (allocator_.count()-1));
+};
+
+template <typename T>
+auto stack<T>::top()-> T&/*strong*/
+{
+	std::lock_guard<std::mutex> locker(mtxstack);
+	if (allocator_.count() > 0) 
+		return(*(allocator_.get() + allocator_.count() - 1));
+	else this->throw_is_empty();
 }
+
+template<typename T>
+auto stack<T>::top()const->T const & 
+{
+	std::lock_guard<std::mutex> locker(mtxstack);
+	if (allocator_.count() > 0) 
+		return(*(allocator_.get() + allocator_.count() - 1));
+	else this->throw_is_empty();
+}
+
+template <typename T>/*noexcept*/
+auto stack<T>::empty()const->bool 
+{
+	std::lock_guard<std::mutex> locker(mtxstack);
+	return(allocator_.empty() == 1);
+}
+
