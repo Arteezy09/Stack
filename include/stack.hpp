@@ -231,14 +231,14 @@ stack<T>::stack(size_t size) : allocator_(size)
 {}
 
 template <typename T>
-stack<T>::stack(stack const & tmp) : allocate(0), mutex_() 
+stack<T>::stack(stack const & st) : allocator_(0), mutex_() 
 {
-	std::lock_guard<std::mutex> lock(tmp.mutexstack_);
-	allocate.swap(allocator<T>(tmp.allocate));
+	std::lock_guard<std::mutex> lock(st.mutexstack_);
+	allocate.swap(allocator<T>(st.allocator_));
 }
 
 template <typename T>
-auto stack<T>::operator=(const stack &st)-> stack &/*strong*/
+auto stack<T>::operator=(const stack & st)-> stack &
 {
         std::lock(mutexstack_,st.mutexstack_);
 	std::lock_guard<std::mutex> lock1(mutexstack_, std::adopt_lock);		
