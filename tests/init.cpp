@@ -3,20 +3,23 @@
 #include <iostream>
 using namespace std;
 
-SCENARIO("count", "[count]"){
+SCENARIO("count", "[count]")
+{
   stack<int> s;
   s.push(1);
   REQUIRE(s.count()==1);
 }
 
-SCENARIO("pop", "[pop]"){
+SCENARIO("pop", "[pop]")
+{
   stack<int> s;
   s.push(1);
   REQUIRE(*(s.pop())==1);	
   REQUIRE(s.count()==0);
 }
 
-SCENARIO("prisv", "[prisv]"){
+SCENARIO("prisv", "[prisv]")
+{
   stack<int> s;
   s.push(1);
   stack<int> s2;
@@ -24,7 +27,8 @@ SCENARIO("prisv", "[prisv]"){
   REQUIRE(s.count()==1);
 }
 
-SCENARIO("empty", "[empty]"){
+SCENARIO("empty", "[empty]")
+{
   stack<int> s1, s2;
   s1.push(1);
   REQUIRE(!s1.empty());
