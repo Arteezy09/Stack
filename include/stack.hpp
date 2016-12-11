@@ -215,13 +215,13 @@ public:
 private:
 	allocator<T> allocator_;
         mutable std::mutex mutexstack_;
-	auto throw_is_empty()/*strong*/ const -> void;
+	auto throw_is_empty() const -> void;              /*strong*/
 };
 
 
 template <typename T>/*noexcept*/
 stack<T>::stack(size_t size) : allocator_(size)
-{};
+{}
 
 
 
@@ -236,14 +236,14 @@ auto stack<T>::operator=(const stack &st)-> stack &/*strong*/
 		(allocator<T>(st.allocator_)).swap(this->allocator_);
 	}
 	return *this;
-};
+}
 
 template <typename T>
 size_t  stack<T>::count() const/*noexcept*/
 {
 	std::lock_guard<std::mutex> locker(mutexstack_);
 	return allocator_.count();
-};
+}
 
 template <typename T>
 void stack<T>::push(T const &value)/*strong*/
@@ -252,7 +252,7 @@ void stack<T>::push(T const &value)/*strong*/
 	if (allocator_.full())
 		allocator_.resize();
 	allocator_.construct(allocator_.get() + allocator_.count(), value);
-};
+}
 
 template <typename T>
 void stack<T>::pop()/*strong*/
@@ -263,7 +263,7 @@ void stack<T>::pop()/*strong*/
 		this->throw_is_empty();
 	}
 	allocator_.destroy(allocator_.get() + (allocator_.count()-1));
-};
+}
 
 template <typename T>
 auto stack<T>::top()-> T&/*strong*/
@@ -293,5 +293,5 @@ auto stack<T>::empty()const->bool
 template<typename T>
 auto stack<T>::throw_is_empty()const->void
 {
-	throw std::logic_error("ERROR"); 
+	throw std::logic_error("Error!"); 
 }
