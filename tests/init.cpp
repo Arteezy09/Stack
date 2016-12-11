@@ -9,16 +9,10 @@ SCENARIO("count", "[count]"){
   REQUIRE(s.count()==1);
 }
 
-SCENARIO("push", "[push]"){
-  stack<int> s;
-  s.push(1);
-  REQUIRE(s.count()==1);
-  REQUIRE(s.top()==1);
-}
-
 SCENARIO("pop", "[pop]"){
   stack<int> s;
-  s.push(1); s.pop();
+  s.push(1);
+  REQUIRE(*(s.pop())==1);	
   REQUIRE(s.count()==0);
 }
 
@@ -28,13 +22,6 @@ SCENARIO("prisv", "[prisv]"){
   stack<int> s2;
   s2=s;
   REQUIRE(s.count()==1);
-  REQUIRE(s.top()==1);
-}
-
-SCENARIO("top", "[top]"){
-  stack<int> s;
-  s.push(1);
-  REQUIRE(s.top()==1);
 }
 
 SCENARIO("empty", "[empty]"){
