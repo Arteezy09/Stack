@@ -231,7 +231,7 @@ stack<T>::stack(size_t size) : allocator_(size)
 {}
 
 template <typename T>
-stack<T>::stack(stack const & st) : allocator_(0), mutex_() 
+stack<T>::stack(stack const & st) : allocator_(0), mutexstack_() 
 {
 	std::lock_guard<std::mutex> lock(st.mutexstack_);
 	allocate.swap(allocator<T>(st.allocator_));
