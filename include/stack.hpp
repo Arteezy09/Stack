@@ -274,7 +274,7 @@ auto stack<T>::pop()->std::shared_ptr<T>
 	{
 		this->throw_is_empty();
 	}
-	std::shared_ptr<T> const res(std::make_shared<T>(std::move(allocator_.get()[allocateor_.count()-1])));
+	std::shared_ptr<T> const res(std::make_shared<T>(std::move(allocator_.get()[allocator_.count()-1])));
 	allocator_.destroy(allocator_.get() + (allocator_.count()-1));
 	return res;
 }
