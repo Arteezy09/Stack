@@ -220,16 +220,16 @@ private:
 };
 
 
+template<typename T>
+auto stack<T>::throw_is_empty()const->void
+{
+	throw std::logic_error("Error!"); 
+}
+
 template <typename T>/*noexcept*/
 stack<T>::stack(size_t size) : allocator_(size), mutexstack_()
 {}
 
-template <typename T>
-stack<T>::stack(stack const & tmp) : allocate(0), mutexstack_()
-{
-	std::lock_guard<std::mutex> lock(tmp.mutexstack_);
-	allocate.swap(allocator<T>(tmp.allocate));
-}
 
 template <typename T>
 auto stack<T>::operator=(const stack & st)-> stack &
@@ -273,7 +273,7 @@ void stack<T>::pop()/*strong*/
 template <typename T>
 auto stack<T>::top()-> T&/*strong*/
 {
-	std::lock_guard<std::mutex> locker(mutexstack_);
+	std::lock_guard<std::mutex> lock(mutexstack_);
 	if (allocator_.count() > 0) 
 		return(*(allocator_.get() + allocator_.count() - 1));
 	else this->throw_is_empty();
@@ -282,7 +282,7 @@ auto stack<T>::top()-> T&/*strong*/
 template<typename T>
 auto stack<T>::top()const->T const & 
 {
-	std::lock_guard<std::mutex> locker(mutexstack_);
+	std::lock_guard<std::mutex> lock(mutexstack_);
 	if (allocator_.count() > 0) 
 		return(*(allocator_.get() + allocator_.count() - 1));
 	else this->throw_is_empty();
@@ -295,8 +295,4 @@ auto stack<T>::empty()const->bool
 	return(allocator_.empty() == 1);
 }
 
-template<typename T>
-auto stack<T>::throw_is_empty()const->void
-{
-	throw std::logic_error("Error!"); 
-}
+
