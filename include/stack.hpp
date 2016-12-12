@@ -233,34 +233,34 @@ stack<T>::stack(size_t size) : allocator_(size)
 template <typename T>
 stack<T>::stack(stack const & st) : allocator_(0), mutexstack_() 
 {
-	std::lock_guard<std::mutex> lock(st.mutexstack_);
+	std::lock_guard<std::mutex> lock(st.mutexstack_); //  блокируем и автоматически разблокируем
 	allocator_.swap(allocator<T>(st.allocator_));
 }
 
 template <typename T>
 auto stack<T>::operator=(const stack & st)-> stack &
 {
-        std::lock(mutexstack_,st.mutexstack_);
-	std::lock_guard<std::mutex> lock1(mutexstack_, std::adopt_lock);		
- 	std::lock_guard<std::mutex> lock2(st.mutexstack_, std::adopt_lock);
+        std::lock(mutexstack_,st.mutexstack_); // блокируем оба мьютекса (или не один из них, если это невозможно)
+	std::lock_guard<std::mutex> lock1(mutexstack_, std::adopt_lock); // после успешной блокировки используем защиту блокировки lock_guard
+ 	std::lock_guard<std::mutex> lock2(st.mutexstack_, std::adopt_lock); // инициализированную объектом класса adopt_lock.
 	if (this != &st)
 	{
 		(allocator<T>(st.allocator_)).swap(this->allocator_);
 	}
 	return *this;
-}
+} // автоматически разблокируем все мьютексы
 
 template <typename T>
 size_t  stack<T>::count() const/*noexcept*/
 {
-	std::lock_guard<std::mutex> lock(mutexstack_);
+	std::lock_guard<std::mutex> lock(mutexstack_);  //  блокируем и автоматически разблокируем
 	return allocator_.count();
 }
 
 template <typename T>
 void stack<T>::push(T const &value)/*strong*/
 {
-	std::lock_guard<std::mutex> lock(mutexstack_);
+	std::lock_guard<std::mutex> lock(mutexstack_);   //  блокируем и автоматически разблокируем
 	if (allocator_.full())
 		allocator_.resize();
 	allocator_.construct(allocator_.get() + allocator_.count(), value);
@@ -269,7 +269,7 @@ void stack<T>::push(T const &value)/*strong*/
 template <typename T>
 auto stack<T>::pop()->std::shared_ptr<T>
 {
-	std::lock_guard<std::mutex> lock(mutexstack_);
+	std::lock_guard<std::mutex> lock(mutexstack_);  //  блокируем и автоматически разблокируем
 	if (allocator_.count() == 0)
 	{
 		this->throw_is_empty();
@@ -282,7 +282,7 @@ auto stack<T>::pop()->std::shared_ptr<T>
 template <typename T>
 auto stack<T>::top()-> T&
 {
-	std::lock_guard<std::mutex> lock(mutexstack_);
+	std::lock_guard<std::mutex> lock(mutexstack_);   //  блокируем и автоматически разблокируем
 	if (allocator_.count() > 0) 
 		return(*(allocator_.get() + allocator_.count() - 1));
 	else this->throw_is_empty();
@@ -291,7 +291,7 @@ auto stack<T>::top()-> T&
 template<typename T>
 auto stack<T>::top()const->T const & 
 {
-	std::lock_guard<std::mutex> lock(mutexstack_);
+	std::lock_guard<std::mutex> lock(mutexstack_);   //  блокируем и автоматически разблокируем
 	if (allocator_.count() > 0) 
 		return(*(allocator_.get() + allocator_.count() - 1));
 	else this->throw_is_empty();
@@ -300,7 +300,7 @@ auto stack<T>::top()const->T const &
 template <typename T>/*noexcept*/
 auto stack<T>::empty()const->bool 
 {
-	std::lock_guard<std::mutex> lock(mutexstack_);
+	std::lock_guard<std::mutex> lock(mutexstack_);   //  блокируем и автоматически разблокируем
 	return(allocator_.empty() == 1);
 }
 
